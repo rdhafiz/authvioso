@@ -1,26 +1,234 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/*
+  Tailwind's theme, wired up to our tokens.
+
+  Nothing in here is a literal value — it's all pointers into tokens.css.
+  That's the whole trick: Tailwind utilities, shadcn components and our own
+  CSS all end up reading the same variables, so there's no way for them to
+  drift apart.
+*/
 @theme inline {
+  /* next/font sets these in the root layout. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-bengali: var(--font-noto-bengali), var(--font-inter), sans-serif;
+  --font-heading: var(--font-sans);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Our roles, exposed as utilities: text-text-link, bg-surface-raised, etc. */
+  --color-text-primary: var(--av-text-primary);
+  --color-text-secondary: var(--av-text-secondary);
+  --color-text-muted: var(--av-text-muted);
+  --color-text-inverse: var(--av-text-inverse);
+  --color-text-link: var(--av-text-link);
+  --color-text-accent: var(--av-text-accent);
+
+  --color-surface-page: var(--av-surface-page);
+  --color-surface-raised: var(--av-surface-raised);
+  --color-surface-sunken: var(--av-surface-sunken);
+  --color-surface-accent: var(--av-surface-accent);
+
+  --color-border-subtle: var(--av-border-subtle);
+  --color-border-strong: var(--av-border-strong);
+  --color-border-focus: var(--av-border-focus);
+
+  --color-status-success: var(--av-status-success);
+  --color-status-warning: var(--av-status-warning);
+  --color-status-danger: var(--av-status-danger);
+  --color-status-info: var(--av-status-info);
+  --color-status-success-surface: var(--av-status-success-surface);
+  --color-status-warning-surface: var(--av-status-warning-surface);
+  --color-status-danger-surface: var(--av-status-danger-surface);
+  --color-status-info-surface: var(--av-status-info-surface);
+
+  --color-diagram-neutral: var(--av-diagram-neutral);
+  --color-diagram-client: var(--av-diagram-client);
+  --color-diagram-authz: var(--av-diagram-authz);
+  --color-diagram-resource: var(--av-diagram-resource);
+  --color-diagram-attacker: var(--av-diagram-attacker);
+  --color-diagram-boundary: var(--av-diagram-boundary);
+
+  --text-xs: var(--av-font-size-xs);
+  --text-sm: var(--av-font-size-sm);
+  --text-base: var(--av-font-size-base);
+  --text-md: var(--av-font-size-md);
+  --text-lg: var(--av-font-size-lg);
+  --text-xl: var(--av-font-size-xl);
+  --text-2xl: var(--av-font-size-2xl);
+  --text-3xl: var(--av-font-size-3xl);
+
+  --radius-sm: var(--av-radius-sm);
+  --radius-md: var(--av-radius-md);
+  --radius-lg: var(--av-radius-lg);
+  --radius-xl: var(--av-radius-lg);
+  --radius-full: var(--av-radius-full);
+
+  --container-prose: var(--av-container-prose);
+  --container-wide: var(--av-container-wide);
+  --container-page: var(--av-container-page);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  shadcn hard-codes these variable names into every component it ships, so we
+  redefine them in terms of our own tokens rather than maintaining a second
+  palette. Change a colour in tokens.css and the shadcn components follow.
+*/
+:root {
+  --radius: var(--av-radius-md);
+
+  --background: var(--av-surface-page);
+  --foreground: var(--av-text-primary);
+  --card: var(--av-surface-raised);
+  --card-foreground: var(--av-text-primary);
+  --popover: var(--av-surface-raised);
+  --popover-foreground: var(--av-text-primary);
+  --primary: var(--av-blue-600);
+  --primary-foreground: var(--av-neutral-0);
+  --secondary: var(--av-surface-sunken);
+  --secondary-foreground: var(--av-text-primary);
+  --muted: var(--av-surface-sunken);
+  --muted-foreground: var(--av-text-muted);
+  --accent: var(--av-surface-accent);
+  --accent-foreground: var(--av-text-link);
+  --destructive: var(--av-status-danger);
+  --border: var(--av-border-subtle);
+  --input: var(--av-border-strong);
+  --ring: var(--av-border-focus);
+}
+
+.dark {
+  /* blue-600 is unreadable on a dark surface; 400 is the equivalent step. */
+  --primary: var(--av-blue-400);
+  --primary-foreground: var(--av-neutral-900);
+}
+
+@layer base {
+  * {
+    border-color: var(--av-border-subtle);
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--av-surface-page);
+    color: var(--av-text-primary);
+    font-size: var(--av-font-size-base);
+    line-height: var(--av-line-height-relaxed);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Bengali glyphs sit taller than Latin and start colliding at the line
+     height we use for English. The extra 0.1 isn't a preference. */
+  :lang(bn) {
+    font-family: var(--font-bengali);
+    line-height: calc(var(--av-line-height-relaxed) + 0.1);
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+    /* Ligatures off. JetBrains Mono renders => as a single glyph, which is
+       fine until someone is reading the code specifically to learn what the
+       characters are. */
+    font-variant-ligatures: none;
+    font-feature-settings:
+      "liga" 0,
+      "calt" 0;
+  }
+
+  /* One focus style everywhere. Don't remove it per-component. */
+  :focus-visible {
+    outline: var(--av-border-width-strong) solid var(--av-border-focus);
+    outline-offset: 2px;
+    border-radius: var(--av-radius-sm);
+  }
+
+  /* Underlined, not just coloured — colour alone isn't enough to mark a link. */
+  a {
+    color: var(--av-text-link);
+    text-underline-offset: 0.2em;
+  }
+
+  :where(button, [role="button"], a[href], input, select, textarea) {
+    touch-action: manipulation;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .container-prose {
+    max-width: var(--av-container-prose);
+    margin-inline: auto;
+  }
+
+  /* Diagrams and wide tables use this to break out of the reading column.
+     It exists so components don't each invent their own escape hatch. */
+  .container-wide {
+    max-width: var(--av-container-wide);
+    margin-inline: auto;
+  }
+
+  .container-page {
+    max-width: var(--av-container-page);
+    margin-inline: auto;
+  }
+
+  /* Off-screen until focused. Has to be the first thing in the tab order. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: var(--av-space-3) var(--av-space-4);
+    background-color: var(--av-surface-raised);
+    color: var(--av-text-primary);
+    border: var(--av-border-width-strong) solid var(--av-border-focus);
+    border-radius: var(--av-radius-md);
+  }
+
+  .skip-link:focus {
+    left: var(--av-space-4);
+    top: var(--av-space-4);
+  }
+}
+
+/* Catches anything that hard-codes a transition instead of using the tokens.
+   Belt and braces, but cheap. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

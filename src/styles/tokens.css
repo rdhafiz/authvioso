@@ -1,0 +1,252 @@
+/*
+  Design tokens.
+
+  Everything visual in the app resolves back to this file. Three layers:
+
+    primitives   --av-blue-600      a literal colour, same in both themes
+    semantics    --av-text-link     a role, swaps per theme
+    components   whatever the component needs, built from semantics
+
+  Components read semantics, never primitives. If you find yourself reaching
+  for --av-blue-600 in a component, either you want --av-text-link, or the
+  semantic layer is missing something and should grow.
+
+  The point of the split is that the dark theme is a re-resolution rather than
+  a second stylesheet, and nothing downstream needs to know which theme is on.
+*/
+
+:root {
+  /* ---- Primitives ---------------------------------------------------- */
+
+  /* Blue is "the project" — links, focus rings, the client app in diagrams. */
+  --av-blue-50: #eff3ff;
+  --av-blue-100: #dce5ff;
+  --av-blue-200: #bfd0ff;
+  --av-blue-300: #94b0ff;
+  --av-blue-400: #6288fb;
+  --av-blue-500: #3f63f0;
+  --av-blue-600: #2a46de;
+  --av-blue-700: #2237bb;
+  --av-blue-800: #223197;
+  --av-blue-900: #22306f;
+  --av-blue-950: #161e43;
+
+  /* Teal means "look here, this is the bit being explained". Deliberately
+     kept off buttons and links — if teal also meant "clickable" it would
+     stop meaning anything in a diagram. */
+  --av-teal-50: #eafcf7;
+  --av-teal-100: #cbf7ec;
+  --av-teal-200: #99eedb;
+  --av-teal-300: #5ddfc6;
+  --av-teal-400: #2bc7ad;
+  --av-teal-500: #12a992;
+  --av-teal-600: #0a8878;
+  --av-teal-700: #0c6c61;
+  --av-teal-800: #0e564e;
+  --av-teal-900: #0f4741;
+  --av-teal-950: #032a27;
+
+  /* Most of the site is these. The blues and teals only mean something
+     because they're rare. */
+  --av-neutral-0: #ffffff;
+  --av-neutral-50: #f8fafc;
+  --av-neutral-100: #f1f4f8;
+  --av-neutral-200: #e3e8ef;
+  --av-neutral-300: #cdd5df;
+  --av-neutral-400: #9aa5b4;
+  --av-neutral-500: #6c7789;
+  --av-neutral-600: #4e5969;
+  --av-neutral-700: #3a4453;
+  --av-neutral-800: #232b37;
+  --av-neutral-900: #151b24;
+  --av-neutral-950: #0b0f16;
+
+  /* Two steps each: the dark one reads on white, the light one on near-black. */
+  --av-green-700: #157f3d;
+  --av-green-400: #4ade80;
+  --av-amber-700: #a65b00;
+  --av-amber-400: #fbbf24;
+  --av-red-700: #c02020;
+  --av-red-400: #f87171;
+
+  /* ---- Semantics (light) ---------------------------------------------- */
+
+  --av-text-primary: var(--av-neutral-900);
+  --av-text-secondary: var(--av-neutral-600);
+  --av-text-muted: var(--av-neutral-500);
+  --av-text-inverse: var(--av-neutral-0);
+  --av-text-link: var(--av-blue-600);
+  --av-text-accent: var(--av-teal-600);
+
+  --av-surface-page: var(--av-neutral-0);
+  --av-surface-raised: var(--av-neutral-50);
+  --av-surface-sunken: var(--av-neutral-100);
+  --av-surface-accent: var(--av-blue-50);
+
+  --av-border-subtle: var(--av-neutral-200);
+  --av-border-strong: var(--av-neutral-300);
+  --av-border-focus: var(--av-blue-600);
+
+  /* Status colours say something about state. Never use them for decoration,
+     and never on their own — pair them with an icon and a word, otherwise
+     they're invisible to anyone who can't distinguish them. */
+  --av-status-success: var(--av-green-700);
+  --av-status-warning: var(--av-amber-700);
+  --av-status-danger: var(--av-red-700);
+  --av-status-info: var(--av-blue-600);
+  --av-status-success-surface: #eaf6ee;
+  --av-status-warning-surface: #fdf3e6;
+  --av-status-danger-surface: #fceded;
+  --av-status-info-surface: var(--av-blue-50);
+
+  /* Diagram roles. These have to stay identical across every diagram in the
+     curriculum — a reader learns the vocabulary once on chapter 3 and we get
+     to spend that investment for the next fifty. Shape and label carry the
+     same information, so the diagrams still work in greyscale. */
+  --av-diagram-neutral: var(--av-neutral-700);
+  --av-diagram-client: var(--av-blue-600);
+  --av-diagram-authz: var(--av-teal-600);
+  --av-diagram-resource: var(--av-neutral-900);
+  --av-diagram-attacker: var(--av-red-700);
+  --av-diagram-boundary: var(--av-neutral-400);
+
+  /* ---- Scales --------------------------------------------------------- */
+
+  /* 4px grid. 8 is the step you'll reach for most of the time. */
+  --av-space-0: 0;
+  --av-space-1: 0.25rem;
+  --av-space-2: 0.5rem;
+  --av-space-3: 0.75rem;
+  --av-space-4: 1rem;
+  --av-space-5: 1.25rem;
+  --av-space-6: 1.5rem;
+  --av-space-8: 2rem;
+  --av-space-10: 2.5rem;
+  --av-space-12: 3rem;
+  --av-space-16: 4rem;
+  --av-space-20: 5rem;
+  --av-space-24: 6rem;
+
+  /* 1.25 ratio. rem throughout so browser font settings still work. */
+  --av-font-size-xs: 0.64rem;
+  --av-font-size-sm: 0.8rem;
+  --av-font-size-base: 1rem;
+  --av-font-size-md: 1.25rem;
+  --av-font-size-lg: 1.563rem;
+  --av-font-size-xl: 1.953rem;
+  --av-font-size-2xl: 2.441rem;
+  --av-font-size-3xl: 3.052rem;
+
+  --av-font-weight-regular: 400;
+  --av-font-weight-medium: 500;
+  --av-font-weight-semibold: 600;
+  --av-font-weight-bold: 700;
+
+  /* 1.65 for body. It looks loose next to app UI but this is a site people
+     read for an hour at a stretch. */
+  --av-line-height-tight: 1.15;
+  --av-line-height-snug: 1.3;
+  --av-line-height-normal: 1.5;
+  --av-line-height-relaxed: 1.65;
+
+  --av-letter-spacing-tight: -0.02em;
+  --av-letter-spacing-normal: 0;
+  --av-letter-spacing-wide: 0.08em;
+
+  /* md is the default. Pill-shaped buttons read as tags, so full is for
+     avatars only. */
+  --av-radius-none: 0;
+  --av-radius-sm: 4px;
+  --av-radius-md: 6px;
+  --av-radius-lg: 12px;
+  --av-radius-full: 9999px;
+
+  /* Prose is capped in ch, not px — the thing we actually care about is
+     characters per line, and that holds up across font sizes and both
+     scripts. Everything else gives up its width to keep prose at 68ch. */
+  --av-container-prose: 68ch;
+  --av-container-wide: 1024px;
+  --av-container-page: 1440px;
+  --av-sidebar-width: 280px;
+  --av-aside-width: 240px;
+  --av-target-min: 44px;
+  --av-border-width: 1px;
+  --av-border-width-strong: 2px;
+
+  --av-duration-instant: 100ms;
+  --av-duration-fast: 150ms;
+  --av-duration-normal: 250ms;
+  --av-duration-slow: 400ms;
+  --av-easing-standard: cubic-bezier(0, 0, 0.2, 1);
+  --av-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+  --av-easing-emphasis: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --av-shadow-none: none;
+  --av-shadow-sm: 0 1px 2px 0 rgb(21 27 36 / 0.06);
+  --av-shadow-md: 0 4px 12px -2px rgb(21 27 36 / 0.1);
+}
+
+/*
+  Dark theme.
+
+  Not an inversion. Saturated colours have to get lighter or they vanish
+  against a dark surface, and shadows do essentially nothing, so elevation
+  comes from a lighter surface instead.
+
+  Neither theme uses pure black on pure white. Maximum contrast causes
+  halation and gets tiring over a long read.
+*/
+.dark {
+  --av-text-primary: var(--av-neutral-100);
+  --av-text-secondary: var(--av-neutral-400);
+  --av-text-muted: var(--av-neutral-400);
+  --av-text-inverse: var(--av-neutral-900);
+  --av-text-link: var(--av-blue-400);
+  --av-text-accent: var(--av-teal-400);
+
+  --av-surface-page: var(--av-neutral-900);
+  --av-surface-raised: var(--av-neutral-800);
+  --av-surface-sunken: var(--av-neutral-950);
+  --av-surface-accent: var(--av-blue-950);
+
+  --av-border-subtle: var(--av-neutral-700);
+  --av-border-strong: var(--av-neutral-600);
+  --av-border-focus: var(--av-blue-400);
+
+  --av-status-success: var(--av-green-400);
+  --av-status-warning: var(--av-amber-400);
+  --av-status-danger: var(--av-red-400);
+  --av-status-info: var(--av-blue-400);
+  --av-status-success-surface: #10231a;
+  --av-status-warning-surface: #2a1e08;
+  --av-status-danger-surface: #2a1414;
+  --av-status-info-surface: var(--av-blue-950);
+
+  --av-diagram-neutral: var(--av-neutral-400);
+  --av-diagram-client: var(--av-blue-400);
+  --av-diagram-authz: var(--av-teal-400);
+  --av-diagram-resource: var(--av-neutral-100);
+  --av-diagram-attacker: var(--av-red-400);
+  --av-diagram-boundary: var(--av-neutral-500);
+
+  --av-shadow-sm: none;
+  --av-shadow-md: none;
+}
+
+/*
+  Zeroing the duration tokens kills every transition in the app at once,
+  which beats hoping each component remembered to check the media query.
+  There's a second, blunter sweep in globals.css for anything that hard-codes
+  a duration anyway.
+
+  Note this removes motion rather than speeding it up. Shortening an animation
+  doesn't help someone who gets motion sickness from it.
+*/
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --av-duration-instant: 0ms;
+    --av-duration-fast: 0ms;
+    --av-duration-normal: 0ms;
+    --av-duration-slow: 0ms;
+  }
+}
