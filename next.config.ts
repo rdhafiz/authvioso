@@ -57,6 +57,17 @@ const withMDX = createMDX({
           properties: { className: ["heading-anchor"] },
         },
       ],
+      // Shiki runs at build time, so no highlighter ships to the browser.
+      // defaultColor: false makes it emit --shiki-light / --shiki-dark custom
+      // properties instead of baking one theme in, and globals.css picks the
+      // right one. Both themes get highlighted in the same pass.
+      [
+        "@shikijs/rehype",
+        {
+          themes: { light: "github-light", dark: "github-dark" },
+          defaultColor: false,
+        },
+      ],
     ],
   },
 });

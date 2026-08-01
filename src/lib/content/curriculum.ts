@@ -1,0 +1,636 @@
+import type { ChapterId, Level, PartId } from "@/types/content";
+
+/**
+ * The curriculum structure — nine parts, fifty-seven chapters.
+ *
+ * This is the shape of the book, not the book. No chapter text lives here;
+ * that's MDX under content/. What this gives us is enough to build the
+ * sidebar, breadcrumbs, prev/next and the chapter index before a word of the
+ * curriculum has been written.
+ *
+ * The order of `chapters` below is the reading order, and prev/next is derived
+ * from it. `requires` is the real dependency, which is a different thing —
+ * C28 comes after C27 in the book but actually depends on C20.
+ */
+
+export interface PartMeta {
+  id: PartId;
+  slug: string;
+  title: string;
+  /** Every part answers one question. Shown on the part page. */
+  question: string;
+  level: string;
+}
+
+export interface ChapterMeta {
+  id: ChapterId;
+  slug: string;
+  title: string;
+  part: PartId;
+  level: Level;
+  /** Minutes of reading, excluding examples and the assessment. */
+  readingTime: number;
+  /** Direct prerequisites only — the chain is one hop further on. */
+  requires: ChapterId[];
+}
+
+export const parts: readonly PartMeta[] = [
+  {
+    id: "P1",
+    slug: "foundations",
+    title: "Foundations",
+    question:
+      "What does the web already do, and what can an attacker do to it?",
+    level: "Foundation",
+  },
+  {
+    id: "P2",
+    slug: "fundamentals",
+    title: "Authentication Fundamentals",
+    question: "What is identity, and how is a claim to it proven safely?",
+    level: "Beginner",
+  },
+  {
+    id: "P3",
+    slug: "sessions",
+    title: "Session-Based Authentication",
+    question: "How does a system remember who you are after login?",
+    level: "Beginner → Intermediate",
+  },
+  {
+    id: "P4",
+    slug: "tokens",
+    title: "Token-Based Authentication",
+    question: "What changes when authenticated state leaves the server?",
+    level: "Intermediate",
+  },
+  {
+    id: "P5",
+    slug: "delegated-authorization",
+    title: "Delegated Authorization",
+    question: "How does one application act for a user without their password?",
+    level: "Intermediate → Advanced",
+  },
+  {
+    id: "P6",
+    slug: "federated-identity",
+    title: "Federated Identity",
+    question: "How does one system learn who a user is from another it trusts?",
+    level: "Advanced",
+  },
+  {
+    id: "P7",
+    slug: "strengthening",
+    title: "Strengthening Authentication",
+    question: "What comes after passwords?",
+    level: "Advanced",
+  },
+  {
+    id: "P8",
+    slug: "operations",
+    title: "Lifecycle and Operations",
+    question: "What happens over the years a system runs?",
+    level: "Advanced",
+  },
+  {
+    id: "P9",
+    slug: "design",
+    title: "Designing Authentication",
+    question: "How do you choose, justify, and review a whole design?",
+    level: "Expert",
+  },
+] as const;
+
+export const chapters: readonly ChapterMeta[] = [
+  // P1 — Foundations
+  {
+    id: "C01",
+    slug: "http-requests-and-responses",
+    title: "HTTP: Requests, Responses, and the Headers That Matter",
+    part: "P1",
+    level: "foundation",
+    readingTime: 15,
+    requires: [],
+  },
+  {
+    id: "C02",
+    slug: "urls-origins-and-the-same-origin-policy",
+    title: "URLs, Origins, and the Same-Origin Policy",
+    part: "P1",
+    level: "foundation",
+    readingTime: 12,
+    requires: ["C01"],
+  },
+  {
+    id: "C03",
+    slug: "tls-what-transport-security-gives-you",
+    title: "TLS: What Transport Security Gives You, and What It Does Not",
+    part: "P1",
+    level: "foundation",
+    readingTime: 12,
+    requires: ["C01"],
+  },
+  {
+    id: "C04",
+    slug: "where-browsers-keep-things",
+    title: "Where Browsers Keep Things: Cookies, Storage, and Memory",
+    part: "P1",
+    level: "foundation",
+    readingTime: 14,
+    requires: ["C01", "C02"],
+  },
+  {
+    id: "C05",
+    slug: "cryptography-for-authentication",
+    title: "Cryptography for Authentication: Hashing, Signing, and Randomness",
+    part: "P1",
+    level: "foundation",
+    readingTime: 18,
+    requires: [],
+  },
+  {
+    id: "C06",
+    slug: "thinking-in-threats",
+    title:
+      "Thinking in Threats: Attackers, Trust Boundaries, and Threat Models",
+    part: "P1",
+    level: "foundation",
+    readingTime: 15,
+    requires: ["C01", "C02", "C03"],
+  },
+
+  // P2 — Authentication Fundamentals
+  {
+    id: "C07",
+    slug: "identity-credentials-and-proof",
+    title: "Identity, Credentials, and Proof",
+    part: "P2",
+    level: "beginner",
+    readingTime: 12,
+    requires: ["C06"],
+  },
+  {
+    id: "C08",
+    slug: "authentication-and-authorization",
+    title: "Authentication and Authorization Are Different Questions",
+    part: "P2",
+    level: "beginner",
+    readingTime: 10,
+    requires: ["C07"],
+  },
+  {
+    id: "C09",
+    slug: "creating-an-account",
+    title: "Creating an Account",
+    part: "P2",
+    level: "beginner",
+    readingTime: 14,
+    requires: ["C07"],
+  },
+  {
+    id: "C10",
+    slug: "passwords",
+    title: "Passwords: Why They Persist and Where They Fail",
+    part: "P2",
+    level: "beginner",
+    readingTime: 15,
+    requires: ["C07"],
+  },
+  {
+    id: "C11",
+    slug: "storing-passwords-safely",
+    title: "Storing Passwords Safely",
+    part: "P2",
+    level: "beginner",
+    readingTime: 18,
+    requires: ["C05", "C10"],
+  },
+  {
+    id: "C12",
+    slug: "verifying-a-login-attempt",
+    title: "Verifying a Login Attempt Safely",
+    part: "P2",
+    level: "beginner",
+    readingTime: 16,
+    requires: ["C06", "C11"],
+  },
+
+  // P3 — Session-Based Authentication
+  {
+    id: "C13",
+    slug: "the-state-problem",
+    title: "The State Problem: What Happens After Login",
+    part: "P3",
+    level: "beginner",
+    readingTime: 12,
+    requires: ["C01", "C12"],
+  },
+  {
+    id: "C14",
+    slug: "sessions-and-session-identifiers",
+    title: "Sessions and Session Identifiers",
+    part: "P3",
+    level: "beginner",
+    readingTime: 14,
+    requires: ["C05", "C13"],
+  },
+  {
+    id: "C15",
+    slug: "cookies-as-a-transport",
+    title: "Cookies as a Transport for Session State",
+    part: "P3",
+    level: "beginner",
+    readingTime: 14,
+    requires: ["C04", "C14"],
+  },
+  {
+    id: "C16",
+    slug: "cookie-attributes",
+    title: "Cookie Attributes and What Each One Defends",
+    part: "P3",
+    level: "beginner",
+    readingTime: 18,
+    requires: ["C02", "C15"],
+  },
+  {
+    id: "C17",
+    slug: "server-side-and-client-side-sessions",
+    title: "Server-Side and Client-Side Sessions",
+    part: "P3",
+    level: "intermediate",
+    readingTime: 16,
+    requires: ["C14"],
+  },
+  {
+    id: "C18",
+    slug: "session-lifetime-and-expiry",
+    title: "Session Lifetime and Expiry Strategies",
+    part: "P3",
+    level: "intermediate",
+    readingTime: 14,
+    requires: ["C17"],
+  },
+  {
+    id: "C19",
+    slug: "session-attacks",
+    title: "Session Attacks: Fixation, Hijacking, and Rotation",
+    part: "P3",
+    level: "intermediate",
+    readingTime: 16,
+    requires: ["C16", "C18"],
+  },
+  {
+    id: "C20",
+    slug: "cross-site-request-forgery",
+    title: "Cross-Site Request Forgery and Its Defenses",
+    part: "P3",
+    level: "intermediate",
+    readingTime: 20,
+    requires: ["C02", "C16"],
+  },
+  {
+    id: "C21",
+    slug: "logging-out-properly",
+    title: "Logging Out Properly",
+    part: "P3",
+    level: "intermediate",
+    readingTime: 14,
+    requires: ["C17", "C19"],
+  },
+
+  // P4 — Token-Based Authentication
+  {
+    id: "C22",
+    slug: "why-tokens-exist",
+    title: "Why Tokens Exist",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 12,
+    requires: ["C17"],
+  },
+  {
+    id: "C23",
+    slug: "bearer-tokens",
+    title: "Bearer Tokens and the Cost of Possession",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 12,
+    requires: ["C22"],
+  },
+  {
+    id: "C24",
+    slug: "opaque-and-self-contained-tokens",
+    title: "Opaque and Self-Contained Tokens",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 14,
+    requires: ["C23"],
+  },
+  {
+    id: "C25",
+    slug: "json-web-tokens",
+    title: "JSON Web Tokens: Structure and Claims",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 18,
+    requires: ["C05", "C24"],
+  },
+  {
+    id: "C26",
+    slug: "validating-a-jwt",
+    title: "Validating a JWT",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 20,
+    requires: ["C25"],
+  },
+  {
+    id: "C27",
+    slug: "token-lifetime-and-rotation",
+    title: "Token Lifetime, Refresh, and Rotation",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 18,
+    requires: ["C18", "C26"],
+  },
+  {
+    id: "C28",
+    slug: "storing-tokens-in-a-browser",
+    title: "Storing Tokens in a Browser",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 16,
+    requires: ["C04", "C20", "C23"],
+  },
+  {
+    id: "C29",
+    slug: "api-keys-and-machine-credentials",
+    title: "API Keys and Machine Credentials",
+    part: "P4",
+    level: "intermediate",
+    readingTime: 12,
+    requires: ["C23"],
+  },
+
+  // P5 — Delegated Authorization
+  {
+    id: "C30",
+    slug: "the-delegation-problem",
+    title: "The Delegation Problem",
+    part: "P5",
+    level: "intermediate",
+    readingTime: 12,
+    requires: ["C08", "C22"],
+  },
+  {
+    id: "C31",
+    slug: "oauth-roles-and-clients",
+    title: "OAuth Roles, Clients, and Registration",
+    part: "P5",
+    level: "intermediate",
+    readingTime: 16,
+    requires: ["C30"],
+  },
+  {
+    id: "C32",
+    slug: "the-authorization-code-flow",
+    title: "The Authorization Code Flow",
+    part: "P5",
+    level: "intermediate",
+    readingTime: 20,
+    requires: ["C27", "C31"],
+  },
+  {
+    id: "C33",
+    slug: "pkce",
+    title: "PKCE and Why It Is Universal",
+    part: "P5",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C32"],
+  },
+  {
+    id: "C34",
+    slug: "redirect-uris-and-state",
+    title: "Redirect URIs, State, and Front-Channel Risk",
+    part: "P5",
+    level: "advanced",
+    readingTime: 18,
+    requires: ["C02", "C20", "C32"],
+  },
+  {
+    id: "C35",
+    slug: "scopes-and-consent",
+    title: "Scopes, Consent, and Least Privilege",
+    part: "P5",
+    level: "advanced",
+    readingTime: 14,
+    requires: ["C08", "C32"],
+  },
+  {
+    id: "C36",
+    slug: "client-credentials-and-device-grants",
+    title: "Client Credentials and Device Authorization Grants",
+    part: "P5",
+    level: "advanced",
+    readingTime: 14,
+    requires: ["C29", "C31"],
+  },
+  {
+    id: "C37",
+    slug: "oauth-anti-patterns",
+    title: "Deprecated Flows and OAuth Anti-Patterns",
+    part: "P5",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C33", "C34"],
+  },
+
+  // P6 — Federated Identity
+  {
+    id: "C38",
+    slug: "why-oauth-is-not-authentication",
+    title: "Why OAuth Is Not Authentication",
+    part: "P6",
+    level: "advanced",
+    readingTime: 12,
+    requires: ["C35"],
+  },
+  {
+    id: "C39",
+    slug: "openid-connect",
+    title: "OpenID Connect: The Identity Layer",
+    part: "P6",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C38"],
+  },
+  {
+    id: "C40",
+    slug: "id-tokens-and-their-validation",
+    title: "ID Tokens and Their Validation",
+    part: "P6",
+    level: "advanced",
+    readingTime: 18,
+    requires: ["C26", "C39"],
+  },
+  {
+    id: "C41",
+    slug: "discovery-keys-and-trust",
+    title: "Discovery, Keys, and Trust in a Federation",
+    part: "P6",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C05", "C40"],
+  },
+  {
+    id: "C42",
+    slug: "social-sign-in-in-practice",
+    title: "Social Sign-In in Practice",
+    part: "P6",
+    level: "advanced",
+    readingTime: 18,
+    requires: ["C09", "C41"],
+  },
+
+  // P7 — Strengthening Authentication
+  {
+    id: "C43",
+    slug: "authentication-factors",
+    title: "Factors, and What Multi-Factor Actually Means",
+    part: "P7",
+    level: "advanced",
+    readingTime: 12,
+    requires: ["C07"],
+  },
+  {
+    id: "C44",
+    slug: "one-time-passwords",
+    title: "One-Time Passwords and Their Delivery Channels",
+    part: "P7",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C05", "C43"],
+  },
+  {
+    id: "C45",
+    slug: "magic-links",
+    title: "Magic Links and Email-Based Authentication",
+    part: "P7",
+    level: "advanced",
+    readingTime: 14,
+    requires: ["C12", "C43"],
+  },
+  {
+    id: "C46",
+    slug: "webauthn",
+    title: "WebAuthn: Public-Key Authentication in the Browser",
+    part: "P7",
+    level: "advanced",
+    readingTime: 20,
+    requires: ["C02", "C05", "C43"],
+  },
+  {
+    id: "C47",
+    slug: "passkeys",
+    title: "Passkeys and Life After Passwords",
+    part: "P7",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C46"],
+  },
+  {
+    id: "C48",
+    slug: "step-up-and-re-authentication",
+    title: "Step-Up and Re-Authentication",
+    part: "P7",
+    level: "advanced",
+    readingTime: 12,
+    requires: ["C18", "C43"],
+  },
+
+  // P8 — Lifecycle and Operations
+  {
+    id: "C49",
+    slug: "account-recovery",
+    title: "Account Recovery: The Weakest Path Wins",
+    part: "P8",
+    level: "advanced",
+    readingTime: 18,
+    requires: ["C12", "C45"],
+  },
+  {
+    id: "C50",
+    slug: "credential-change-and-invalidation",
+    title: "Credential Change and Global Invalidation",
+    part: "P8",
+    level: "advanced",
+    readingTime: 14,
+    requires: ["C21", "C27"],
+  },
+  {
+    id: "C51",
+    slug: "revocation-at-scale",
+    title: "Revocation at Scale",
+    part: "P8",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C24", "C50"],
+  },
+  {
+    id: "C52",
+    slug: "key-management-and-rotation",
+    title: "Key Management and Rotation",
+    part: "P8",
+    level: "advanced",
+    readingTime: 16,
+    requires: ["C26", "C41"],
+  },
+  {
+    id: "C53",
+    slug: "monitoring-and-detecting-abuse",
+    title: "Monitoring, Logging, and Detecting Abuse",
+    part: "P8",
+    level: "advanced",
+    readingTime: 14,
+    requires: ["C12", "C19"],
+  },
+
+  // P9 — Designing Authentication
+  {
+    id: "C54",
+    slug: "threat-modeling-an-auth-system",
+    title: "Threat Modeling an Authentication System",
+    part: "P9",
+    level: "expert",
+    readingTime: 20,
+    requires: ["C06"],
+  },
+  {
+    id: "C55",
+    slug: "choosing-an-approach",
+    title: "Choosing an Approach: A Decision Framework",
+    part: "P9",
+    level: "expert",
+    readingTime: 20,
+    requires: ["C54"],
+  },
+  {
+    id: "C56",
+    slug: "reviewing-an-authentication-design",
+    title: "Reviewing an Authentication Design",
+    part: "P9",
+    level: "expert",
+    readingTime: 18,
+    requires: ["C55"],
+  },
+  {
+    id: "C57",
+    slug: "how-real-systems-failed",
+    title: "How Real Systems Failed",
+    part: "P9",
+    level: "expert",
+    readingTime: 18,
+    requires: ["C56"],
+  },
+] as const;

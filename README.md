@@ -9,21 +9,22 @@ verified understanding.
 
 This repository is the **website**. The other two:
 
-| Repository           | Contains                                                        |
-| -------------------- | --------------------------------------------------------------- |
-| `authvioso`          | This platform and the published curriculum                      |
-| `authvioso_examples` | Runnable authentication examples                                |
-| `authvioso_meta`     | Planning and governance documentation — **the source of truth** |
+| Repository           | Contains                                      |
+| -------------------- | --------------------------------------------- |
+| `authvioso`          | This platform and the published curriculum    |
+| `authvioso_examples` | Runnable authentication examples              |
+| `authvioso_meta`     | Planning docs — the source of truth for specs |
 
-> **Status: foundation only.** No content, no UI, no features. This sprint
-> established the architecture, configuration, routing skeleton, design tokens,
-> and SEO foundation. Every route renders `null`.
+> **Status: shell complete, no content.** Navigation, MDX rendering, theming
+> and SEO all work. The curriculum structure is real — 9 parts, 57 chapters,
+> with working prerequisites and prev/next — but the chapters themselves are
+> unwritten and render an honest "not written yet" state.
 
 ---
 
 ## Setup
 
-Requires **Node.js ≥ 20.9** and **pnpm**.
+Needs **Node ≥ 20.9** and **pnpm**.
 
 ```bash
 pnpm install
@@ -31,160 +32,217 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-| Command                             | Does                            |
-| ----------------------------------- | ------------------------------- |
-| `pnpm dev`                          | Development server (Turbopack)  |
-| `pnpm build`                        | Production build                |
-| `pnpm start`                        | Serve the production build      |
-| `pnpm typecheck`                    | TypeScript, no emit             |
-| `pnpm lint` / `pnpm lint:fix`       | ESLint                          |
-| `pnpm format` / `pnpm format:check` | Prettier                        |
-| `pnpm typegen`                      | Regenerate Next.js route types  |
-| `pnpm check`                        | typecheck + lint + format check |
+| Command                        | Does                            |
+| ------------------------------ | ------------------------------- |
+| `pnpm dev`                     | Dev server (Turbopack)          |
+| `pnpm build`                   | Production build                |
+| `pnpm start`                   | Serve the build                 |
+| `pnpm typecheck`               | `tsc --noEmit`                  |
+| `pnpm lint` / `lint:fix`       | ESLint                          |
+| `pnpm format` / `format:check` | Prettier                        |
+| `pnpm typegen`                 | Regenerate Next.js route types  |
+| `pnpm check`                   | typecheck + lint + format check |
+
+Run `pnpm check` before committing. CI will run the same thing.
+
+---
+
+## Architecture
+
+### Content is data, not code
+
+The curriculum **structure** lives in `src/lib/content/curriculum.ts` — parts,
+chapters, slugs, levels, reading times, prerequisites. The curriculum **text**
+lives in `content/en/chapters/*.mdx`.
+
+Splitting them is what lets the whole site work before a single chapter is
+written. Sidebar, breadcrumbs, prev/next, the chapter index and prerequisite
+lists all read the structure; only the chapter body needs the MDX. A chapter
+with no MDX file renders its header, prerequisites and neighbours plus a "not
+written yet" panel, rather than 404ing.
+
+### Everything visual comes from tokens
+
+`src/styles/tokens.css` is the single source. Three layers:
+
+```
+primitives   --av-blue-600      literal, same in both themes
+semantics    --av-text-link     a role, re-resolves per theme
+components   built from semantics
+```
+
+`globals.css` points Tailwind's theme **and** shadcn's variable names at those
+same tokens, so the three systems can't drift. Components read semantics; if
+you're reaching for `--av-blue-600` in a component, you either want
+`--av-text-link` or the semantic layer needs a new entry.
+
+Dark mode is a re-resolution, not a second stylesheet. Reduced motion zeroes
+every duration token at once rather than relying on each component to check.
+
+### Rendering
+
+Static by default. 91 pages prerender at build, including all 57 chapters.
+Shiki highlights code at build time, so no highlighter ships to the browser —
+it emits both themes as CSS custom properties and the stylesheet picks one.
+
+Client components are deliberately few: theme switcher, mobile nav, search
+trigger, table of contents, code copy button, curriculum sidebar. Everything
+else is server-rendered, and all reading works without JavaScript.
 
 ---
 
 ## Folder structure
 
-```text
+```
 authvioso/
-├── content/                    Curriculum content, OUTSIDE src by design
-│   ├── en/{chapters,pages}/    English edition
-│   ├── bn/{chapters,pages}/    Bangla edition — identical identifiers
-│   └── graph/                  nodes.json, relationships.json, topics.json
+├── content/
+│   ├── en/chapters/*.mdx        curriculum text
+│   ├── bn/                      same structure, same filenames
+│   └── graph/                   nodes, relationships, topics
 │
 ├── src/
 │   ├── app/
-│   │   ├── (site)/             Route group: pages with the site shell
-│   │   │   ├── layout.tsx      Header / main / footer shell
-│   │   │   ├── page.tsx        /
-│   │   │   ├── learn/[part]/[chapter]/
-│   │   │   ├── glossary/[term]/
-│   │   │   ├── paths/[path]/
-│   │   │   ├── certificate/verify/[id]/
-│   │   │   └── …               about, vision, principles, scope, faq,
-│   │   │                       contributing, standards, changelog, license,
-│   │   │                       chapters, examples, search, progress, settings
-│   │   ├── layout.tsx          Root: fonts, theme, skip link, metadata
-│   │   ├── globals.css         Tailwind theme + token bridge
-│   │   ├── not-found.tsx       404
-│   │   ├── error.tsx           Error boundary
-│   │   ├── sitemap.ts          Generated, with hreflang alternates
-│   │   ├── robots.ts
-│   │   └── manifest.ts
+│   │   ├── (site)/              everything with header + footer
+│   │   │   ├── learn/
+│   │   │   │   ├── layout.tsx   sidebar shell
+│   │   │   │   └── [part]/[chapter]/
+│   │   │   └── …                about, faq, glossary, search, …
+│   │   ├── layout.tsx           fonts, theme, skip link
+│   │   ├── globals.css
+│   │   ├── sitemap.ts · robots.ts · manifest.ts
+│   │   └── not-found.tsx · error.tsx
 │   │
 │   ├── components/
-│   │   ├── ui/                 Generic primitives (shadcn source lives here)
-│   │   ├── layout/             Structure, no content of its own
-│   │   ├── navigation/         Header, sidebar, breadcrumb, chapter nav
-│   │   ├── icons/              Icon vocabulary
-│   │   ├── content/            MDX renderers: diagrams, code, glossary links
-│   │   ├── learning/           Chapter components — the reason the site exists
-│   │   ├── quiz/               Assessment interface
-│   │   ├── certificate/        Issuance and verification
-│   │   └── providers/          ThemeProvider
+│   │   ├── ui/                  button, card, badge, tabs, accordion,
+│   │   │                        callout, code-block, copy-button,
+│   │   │                        pagination, empty-state, skeleton
+│   │   ├── navigation/          header, footer, sidebar, breadcrumbs,
+│   │   │                        toc, theme + search + mobile nav
+│   │   ├── content/             json-ld
+│   │   ├── learning/            chapter components (Sprint 2)
+│   │   ├── quiz/ certificate/   later sprints
+│   │   └── providers/
 │   │
-│   ├── config/                 site.ts · i18n.ts · navigation.ts
+│   ├── config/                  site · i18n · navigation
+│   ├── hooks/                   use-hydrated
 │   ├── lib/
-│   │   ├── content/            MDX loading and paths
-│   │   ├── graph/              Knowledge graph access + validation
-│   │   ├── seo/                Metadata helpers
-│   │   └── utils.ts
-│   ├── styles/tokens.css       ← the authoritative source of every value
-│   ├── types/content.ts        Chapter, node, and relationship types
-│   └── mdx-components.tsx      Required by @next/mdx
-│
-└── …config                     next.config.ts, eslint.config.mjs, .prettierrc.json
+│   │   ├── content/             curriculum · queries · mdx · paths
+│   │   ├── graph/               knowledge graph (types + rules)
+│   │   ├── progress/            reading progress
+│   │   ├── search/              types + design notes
+│   │   └── seo/                 metadata · structured-data
+│   ├── styles/tokens.css
+│   ├── types/content.ts
+│   └── mdx-components.tsx
 ```
 
-Each `src/components/*` folder has a `README.md` recording what belongs in it
-and the rules that govern it.
+Most `components/*` and `lib/*` folders have a README with the rules for what
+goes in them.
 
 ---
 
-## Development
+## How to add a chapter
 
-### Design tokens are the single source of values
+Two steps, in this order.
 
-`src/styles/tokens.css` holds three tiers. **Components only ever touch tier 2.**
+**1. Add it to the structure** in `src/lib/content/curriculum.ts`:
 
-```text
-1  primitive   --av-blue-600         raw value, theme-independent
-2  semantic    --av-text-link        role, resolves per theme
-3  component   declared in the component
+```ts
+{
+  id: "C58",
+  slug: "some-new-chapter",
+  title: "Some New Chapter",
+  part: "P4",
+  level: "intermediate",
+  readingTime: 15,
+  requires: ["C25"],
+}
 ```
 
-`globals.css` maps Tailwind utilities and shadcn's semantic names onto those
-tokens. Nothing declares a colour twice: a component referencing `--av-blue-600`
-directly has stepped outside the system.
+Position in the array **is** the reading order, so insert it where it belongs
+rather than appending. IDs are permanent — never reuse one, even for a
+retired chapter, because they show up in example folder names and quiz
+questions.
 
-Two consequences worth knowing:
+At this point the route exists. It'll render with a "not written yet" panel.
 
-- **Theming is a token resolution**, not a second stylesheet. `.dark` re-resolves
-  semantic tokens; no component knows which theme is active.
-- **Reduced motion is one switch.** Every duration token resolves to `0ms` under
-  `prefers-reduced-motion`, which removes every animation in the system at once
-  rather than relying on each component remembering.
+**2. Write the text** at `content/en/chapters/some-new-chapter.mdx`. The
+filename must match the slug exactly. Restart isn't needed; the route picks it
+up on next request.
 
-### Content pipeline
+---
 
-MDX is configured for **Turbopack**, which is the default bundler in Next.js 16.
-Remark and rehype plugins are therefore declared as **strings** with
-serialisable options — functions cannot cross the JS/Rust boundary.
+## How to add MDX content
 
-Active plugins: `remark-gfm`, `rehype-slug`, `rehype-autolink-headings`.
+Chapters are plain MDX. Markdown renders through the element map in
+`src/mdx-components.tsx`, so no classes are needed for normal prose.
 
-Content lives in `content/` rather than `src/` so it stays versioned,
-reviewable, diffable, forkable, and survives a change of platform.
+Available without importing:
 
-### Conventions
+````mdx
+## A heading
 
-- **Path aliases**: `@/components`, `@/config`, `@/lib`, `@/types`, `@/styles`.
-- **Typed routes** are on: every internal `href` is checked at compile time.
-- **`params` is a `Promise`** in Next.js 16. Synchronous access was removed.
-- **Formatting is automated** and never discussed in review.
+Normal paragraphs, **bold**, `inline code`, tables and lists all just work.
+
+<Callout variant="security" title="What this doesn't cover">
+  Callout variants: note, tip, warning, danger, security, deprecated, insecure.
+</Callout>
+
+```ts
+// Code blocks are highlighted at build time and get a copy button.
+const token = await verify(jwt);
+```
+````
+
+Notes:
+
+- `##` and `###` headings automatically get ids and feed the table of
+  contents. `#` is not used in chapter bodies — the page renders the title.
+- `insecure` is the variant for code shown specifically to be criticised. It
+  is styled to be impossible to mistake for a recommendation, because someone
+  will copy it anyway.
+- To register a new component for authors, add it to the `components` object
+  in `src/mdx-components.tsx`.
+
+### Adding a plugin
+
+Remark and rehype plugins go in `next.config.ts` as **strings**, not imports.
+Turbopack hands the config to Rust and functions can't cross that boundary,
+so options have to be serialisable too.
+
+---
+
+## Development workflow
+
+1. Branch off `main` — one concern per branch.
+2. Build against the spec in `authvioso_meta/v1.0/`.
+3. `pnpm check` locally before pushing.
+4. Open a PR; both review passes are required before merge.
+5. Squash merge, write the message deliberately.
+
+Formatting is automated and never discussed in review.
 
 ---
 
 ## Known gaps
 
-Recorded so they are not mistaken for oversights. Full list in
-`authvioso_meta/v1.0/10_AI_Guidelines/02_PROJECT_CONTEXT.md` §5.2.
-
-| Gap                            | Impact                                                                                                                            |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Licence undecided**          | `LICENSE` is absent. Blocks making the repository public. Proposal on record: CC BY-SA 4.0 for content, MIT for code              |
-| **Domain undecided**           | `NEXT_PUBLIC_SITE_URL` defaults to localhost. `authvioso.dev` is a placeholder that appears in printed certificate specifications |
-| **No logo**                    | `manifest.ts` declares no icons and there is no favicon. Declaring icons that do not exist would produce broken references        |
-| **Bangla routing mechanism**   | URL shape is specified (`/bn/…`); the App Router mechanism that produces it is not decided. Only English routes exist             |
-| **No Content-Security-Policy** | Must be written against the real asset graph. A permissive placeholder CSP is worse than none because it reads as protection      |
-| **Palette unconfirmed**        | Token values come from the branding proposal; contrast pairs have not been measured with a tool                                   |
+| Gap                      | Effect                                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Licence undecided**    | No `LICENSE` file. Blocks going public                                                                        |
+| **Domain undecided**     | `NEXT_PUBLIC_SITE_URL` points at localhost. Appears on printed certificates, so it can't stay a placeholder   |
+| **No logo**              | No favicon, no manifest icons. Declaring files that don't exist would just 404                                |
+| **Bangla routing**       | URL shape is decided (`/bn/…`); the App Router mechanism isn't. English only for now                          |
+| **No CSP**               | Needs writing against the real asset graph. A permissive placeholder reads as protection without being any    |
+| **Search unimplemented** | Types and design notes only. Needs content before an index is worth building                                  |
+| **Fixture chapter**      | `content/en/chapters/http-requests-and-responses.mdx` is a pipeline test, not C01. Delete when C01 is written |
 
 ---
 
-## Where the specifications live
+## Specs
 
-`authvioso_meta/v1.0/` is the source of truth — 146 documents across 14
-folders. Code comments cite them by identifier (`TEC-4`, `DSY-009`, `CRT-008`)
-so any rule can be traced to the document that decided it.
+`authvioso_meta/v1.0/` holds 146 documents across 14 folders covering the
+vision, curriculum, knowledge graph, content standards, design system, quiz
+and certificate systems, workflow and roadmap.
 
-| Folder                     | Covers                                                                |
-| -------------------------- | --------------------------------------------------------------------- |
-| `00_Project/`              | Vision, mission, goals, scope, audience, principles, success criteria |
-| `01_Branding/`             | Identity, colour, typography, icons, voice, naming                    |
-| `02_Curriculum/`           | 9 parts, 57 chapters, levels, paths, objectives                       |
-| `03_Knowledge_Graph/`      | Node model, relationships, dependency validation                      |
-| `04_Content_Standards/`    | Chapter template, writing, diagrams, code, quizzes                    |
-| `05_Website_Architecture/` | IA, routing, components, accessibility, SEO, performance              |
-| `06_Example_Architecture/` | Example repository standards                                          |
-| `07_Design_System/`        | Tokens, components, motion, theme                                     |
-| `08_Quiz_System/`          | Assessment design, scoring, question authoring                        |
-| `09_Certificate/`          | Eligibility, design, generation, verification, security               |
-| `10_AI_Guidelines/`        | AI collaboration rules and project context                            |
-| `11_Development_Workflow/` | Git, review, release, decision log                                    |
-| `12_Roadmap/`              | Phases, milestones, backlog, risk register                            |
-| `13_Release/`              | Governance, contribution, licensing, security policy                  |
-
-**Every planning document is currently `Draft`.** Nothing is Locked, so nothing
-is authoritative in the sense the standards mean — and implementation against a
-Draft specification is provisional by definition.
+All of them are currently **Draft** — nothing is Locked, so anything built
+against them is provisional by definition.

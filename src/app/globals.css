@@ -183,6 +183,44 @@
   }
 }
 
+/*
+  Shiki emits both themes in one pass — every token carries --shiki-light and
+  --shiki-dark, and we pick which one applies. Costs a few bytes of inline
+  style per token and saves shipping a highlighter or re-rendering on toggle.
+
+  The background is ours rather than the theme's, so code blocks sit on the
+  same raised surface as everything else instead of introducing a third colour.
+*/
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+  background-color: transparent;
+}
+
+.shiki {
+  font-size: var(--av-font-size-sm);
+  line-height: 1.6;
+}
+
+/* rehype-autolink-headings wraps heading text in an anchor. Inherit rather
+   than turning every heading blue, but keep it underlinable on hover so it's
+   discoverable as a link. */
+.heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.heading-anchor:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--av-border-strong);
+}
+
 @layer utilities {
   .container-prose {
     max-width: var(--av-container-prose);
