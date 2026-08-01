@@ -1,0 +1,312 @@
+export const metadata = {
+  id: "SAMPLE",
+  title: "The Lifecycle of a Library Loan",
+  description:
+    "A dummy chapter used to exercise every learning component. The subject is deliberately not authentication.",
+  status: "draft",
+};
+
+<InfoBox title="This is not a real chapter">
+  Placeholder content used to check that every component renders, in both
+  themes, at every breakpoint. The subject is a library lending system because
+  it needs to be something concrete that isn't authentication.
+</InfoBox>
+
+A loan is the period during which a book is out of the library and someone
+else can't have it. Everything the lending system does is in service of
+knowing, at any moment, where a given copy is and when it comes back.
+
+<Definition term="Copy">
+  A single physical book on a shelf. A library holding six copies of the same
+  title has six copies and one **catalogue record** — the distinction matters
+  the moment two people want the same title at once.
+</Definition>
+
+## Borrowing
+
+The exchange is short. A member presents a copy, the system checks whether
+they're allowed it, and the loan starts.
+
+<SequenceDiagram
+  caption="Borrowing a copy"
+  alt="Four participants: Member, Desk terminal, Loan service and Catalogue. The member presents a copy to the desk terminal. The terminal asks the loan service to start a loan, passing the member number and the copy barcode. The loan service asks the catalogue whether that copy is available and gets confirmation. The loan service records the loan with a due date and returns it to the terminal, which prints a receipt for the member."
+  chart={`sequenceDiagram
+    participant M as Member
+    participant D as Desk terminal
+    participant L as Loan service
+    participant C as Catalogue
+    M->>D: Present copy
+    D->>L: Start loan (member, barcode)
+    L->>C: Is this copy available?
+    C-->>L: Available
+    L-->>D: Loan created, due 14 days
+    D-->>M: Receipt`}
+/>
+
+Note that the catalogue is asked, rather than told. The loan service doesn't
+assume a copy is on the shelf just because nothing says otherwise — a copy can
+be missing, withdrawn, or already out.
+
+<Tip>
+  When you're modelling something like this, write down which component is the
+  authority for each fact. Half of all bugs here come from two services both
+  believing they own the answer.
+</Tip>
+
+## The loan itself
+
+<Timeline
+  caption="A loan from start to close"
+  steps={[
+    {
+      title: "Issued",
+      detail:
+        "The copy leaves the building. A due date is set from the member's category, not from the book.",
+    },
+    {
+      title: "Reminder",
+      detail:
+        "Three days before the due date, if the member has contact details on file.",
+    },
+    {
+      title: "Due",
+      detail:
+        "The loan can be renewed unless somebody else has reserved the title.",
+    },
+    {
+      title: "Overdue",
+      detail:
+        "Charges begin. Most systems cap these well below the replacement cost of the book.",
+      danger: true,
+    },
+    {
+      title: "Returned",
+      detail:
+        "The copy is checked in, the loan closes, and any reservation queue is notified.",
+    },
+  ]}
+/>
+
+<Remember>
+  The due date belongs to the loan, not the copy. Two people borrowing the same
+  title on the same day can have different due dates, and a system that stores
+  the date on the copy will get this wrong the first time it happens.
+</Remember>
+
+## Loan policies
+
+Different member categories get different terms. There's no universally
+correct set — a reference library and a school library want opposite things.
+
+<ComparisonTable
+  caption="Loan terms by member category"
+  columns={[
+    { key: "standard", label: "Standard" },
+    { key: "student", label: "Student" },
+    { key: "staff", label: "Staff" },
+  ]}
+  rows={[
+    {
+      criterion: "Loan period",
+      values: { standard: "14 days", student: "28 days", staff: "90 days" },
+    },
+    {
+      criterion: "Renewals",
+      note: "Blocked once a title is reserved",
+      values: { standard: "2", student: "3", staff: "Unlimited" },
+    },
+    {
+      criterion: "Can reserve",
+      values: { standard: true, student: true, staff: true },
+    },
+    {
+      criterion: "Overdue charges",
+      values: { standard: true, student: true, staff: false },
+    },
+    {
+      criterion: "Inter-library requests",
+      values: { standard: false, student: true, staff: true },
+    },
+    {
+      criterion: "Reading-room only titles",
+      values: { standard: null, student: null, staff: "By arrangement" },
+    },
+  ]}
+/>
+
+## Renewals
+
+<DecisionTree
+  caption="Whether a loan can be renewed"
+  assumptions="The member's account is in good standing and the copy is not part of a reading-room collection."
+  root={{
+    question: "Has anyone reserved this title?",
+    branches: [
+      {
+        answer: "Yes",
+        outcome: { label: "Refuse. The reservation queue takes priority." },
+      },
+      {
+        answer: "No",
+        next: {
+          question: "Has the member hit their renewal limit?",
+          branches: [
+            {
+              answer: "Yes",
+              outcome: {
+                label:
+                  "Refuse, and tell them the limit rather than just saying no.",
+              },
+            },
+            {
+              answer: "No",
+              outcome: {
+                label: "Renew from today, not from the original due date.",
+              },
+            },
+          ],
+        },
+      },
+    ],
+  }}
+/>
+
+<CommonMistake
+  tempting="It reads as generous, and it's what a member would expect if they renewed early."
+  consequence="A member who renews on day one of a 14-day loan gets 27 days. Do it three times and a book is out for three months without ever being overdue."
+  instead="Renew from the date of the request. If you want to reward renewing early, extend the renewal limit instead — it's easier to reason about."
+>
+  Renewing from the original due date rather than from today.
+</CommonMistake>
+
+<BestPractice
+  reason="The queue is the only reason a reservation means anything. A renewal that jumps it makes reservations advisory, and members stop trusting them."
+  when="Whenever a title has an active reservation, regardless of member category."
+>
+  Block renewals on reserved titles, including for staff.
+</BestPractice>
+
+## The API
+
+The desk terminal talks to the loan service over HTTP.
+
+<ApiRequest
+  method="POST"
+  path="/api/v1/loans"
+  headers={[
+    { name: "Content-Type", value: "application/json" },
+    { name: "Idempotency-Key", value: "b41c9a2e-…", highlight: true },
+  ]}
+  note="The idempotency key matters — desk terminals get double-tapped constantly, and two loans on one copy is a mess to unpick."
+  body={`{ "member": "M-4471", "barcode": "31234000581927" }`}
+/>
+
+<ApiResponse
+  status={201}
+  statusText="Created"
+  headers={[{ name: "Location", value: "/api/v1/loans/L-99312" }]}
+  body={`{ "id": "L-99312", "due": "2026-08-15", "renewals_left": 2 }`}
+/>
+
+A refusal is more interesting than a success, because the reason is what the
+desk staff need to read out:
+
+<ApiResponse
+  status={409}
+  statusText="Conflict"
+  note="The code says what happened; the body says what to do about it. A bare 409 leaves the person at the desk with nothing to say."
+  body={`{ "error": { "code": "copy_already_on_loan", "message": "This copy is out until 15 August." } }`}
+/>
+
+### The stored record
+
+<JsonViewer
+  data={{
+    id: "L-99312",
+    member: "M-4471",
+    copy: { barcode: "31234000581927", title: "The Wind in the Willows" },
+    issued: "2026-08-01",
+    due: "2026-08-15",
+    renewals_left: 2,
+    returned: null,
+  }}
+  annotations={{
+    due: "set from member category, not from the title",
+    renewals_left: "decremented on renewal, never reset",
+    returned: "null while the loan is open",
+  }}
+/>
+
+## Running it locally
+
+<TerminalBlock
+  commands={["pnpm install", "pnpm seed --members 50", "pnpm dev"]}
+  output={[
+    "Seeded 50 members and 400 copies",
+    "Listening on http://localhost:4000",
+  ]}
+/>
+
+```ts
+// Renewal dates run from today, not from the existing due date.
+export function renew(loan: Loan, today: Date): Loan {
+  if (loan.reservations > 0) throw new ReservedError(loan.id);
+  if (loan.renewalsLeft === 0) throw new RenewalLimitError(loan.id);
+
+  return {
+    ...loan,
+    due: addDays(today, loanPeriodFor(loan.memberCategory)),
+    renewalsLeft: loan.renewalsLeft - 1,
+  };
+}
+```
+
+<SecurityNote title="What this doesn't cover">
+  Nothing here checks that the person at the desk is the member whose number was
+  typed in. That's a separate problem and this dummy chapter doesn't address it
+  — which is exactly the kind of boundary a real chapter has to state rather
+  than leave implied.
+</SecurityNote>
+
+<DidYouKnow>
+  Fixed loan periods are a relatively modern convention. Nineteenth-century
+  subscription libraries often lent indefinitely and simply charged an annual
+  fee, which is why their catalogues are full of titles nobody ever returned.
+</DidYouKnow>
+
+<InterviewTip>
+  "Where would you store the due date?" is a decent interview question because
+  the wrong answer — on the copy — sounds tidier than the right one.
+</InterviewTip>
+
+<Warning>
+  Overdue charges accumulate. Any system that calculates them on read rather
+  than on a schedule will show different totals depending on when you look, and
+  reconciling that afterwards is unpleasant.
+</Warning>
+
+<Summary tradeoff="Longer loan periods keep members happy and keep books off the shelf. Every policy here is that trade-off with different numbers.">
+  - A loan is a period, not a property of a book. - The due date comes from the
+  member's category. - Renewals run from the request, and reservations outrank
+  them. - Refusals need a reason the desk can read aloud.
+</Summary>
+
+<FurtherReading
+  items={[
+    {
+      title: "ISO 2789: International library statistics",
+      href: "https://www.iso.org/standard/60680.html",
+      source: "ISO",
+      adds: "Defines the counting rules behind loan and circulation figures, which is where most of these policies came from.",
+      checked: "2026-08-01",
+    },
+    {
+      title: "Koha manual — circulation",
+      href: "https://koha-community.org/manual/latest/en/html/circulation.html",
+      source: "Koha",
+      vendor: true,
+      adds: "A working open-source implementation of the rules above. Useful for seeing how the edge cases are actually handled.",
+      checked: "2026-08-01",
+    },
+  ]}
+/>

@@ -1,14 +1,12 @@
 import { FileQuestion } from "lucide-react";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Route } from "next";
 
 import { JsonLd } from "@/components/content/json-ld";
-import { Breadcrumbs, type Crumb } from "@/components/navigation/breadcrumbs";
-import { TableOfContents } from "@/components/navigation/table-of-contents";
+import { ChapterLayout } from "@/components/learning/chapter-layout";
+import type { Crumb } from "@/components/navigation/breadcrumbs";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination } from "@/components/ui/pagination";
 import { getTableOfContents, loadChapterContent } from "@/lib/content/mdx";
 import {
   getAllChapters,
@@ -17,7 +15,9 @@ import {
   getChapterNeighbours,
   getChapterPosition,
   getPart,
+  getPartHref,
   getPrerequisites,
+  getRelatedChapters,
 } from "@/lib/content/queries";
 import { articleSchema, breadcrumbSchema } from "@/lib/seo/structured-data";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -27,12 +27,12 @@ interface Props {
 }
 
 /**
- * Every chapter in the curriculum gets a prerendered route, written or not.
+ * Every chapter gets a prerendered route, written or not.
  *
  * Deliberately not gated on whether the MDX exists. An unwritten chapter
  * renders as "not written yet" with its prerequisites and neighbours intact —
  * a 404 would claim the chapter doesn't exist, which is a different and wrong
- * statement. It also means the sidebar never links into a dead end.
+ * statement, and it would mean the sidebar links into dead ends for months.
  */
 export function generateStaticParams() {
   return getAllChapters().map((chapter) => ({
@@ -62,106 +62,74 @@ export default async function ChapterPage({ params }: Props) {
   const chapter = getChapter(chapterSlug);
   const part = getPart(partSlug);
 
-  // Genuinely unknown slug, or a chapter reached through the wrong part.
-  // Both are real 404s rather than missing content.
+  // Unknown slug, or a chapter reached through the wrong part. Both are real
+  // 404s rather than missing content.
   if (!chapter || !part || chapter.part !== part.id) notFound();
 
   const content = await loadChapterContent(chapter.slug);
   const toc = await getTableOfContents(chapter.slug);
   const { previous, next } = getChapterNeighbours(chapter.id);
-  const prerequisites = getPrerequisites(chapter.id);
-  const position = getChapterPosition(chapter.id);
 
   const crumbs: Crumb[] = [
     { label: "Curriculum", href: "/learn" },
-    { label: part.title, href: `/learn/${part.slug}` as Route },
+    { label: part.title, href: getPartHref(part) },
     { label: chapter.title },
   ];
 
+  const description = `${part.title}. ${chapter.readingTime} minute read.`;
+
   return (
-    <div className="flex gap-12">
-      <article className="min-w-0 flex-1">
-        <Breadcrumbs items={crumbs} />
-
-        <header className="mb-8">
-          <p className="text-text-muted mb-2 text-sm">
-            {part.title} · Chapter {position.index} of {position.total}
-          </p>
-          <h1 className="text-2xl font-bold">{chapter.title}</h1>
-          <p className="text-text-muted mt-3 flex flex-wrap gap-x-4 text-sm">
-            <span className="capitalize">{chapter.level}</span>
-            <span>{chapter.readingTime} min read</span>
-          </p>
-        </header>
-
-        {/* Direct prerequisites only. The full chain is one hop further on and
-            listing all of it produces a wall nobody reads. */}
-        {prerequisites.length > 0 ? (
-          <section className="border-border-subtle mb-10 rounded-md border p-4">
-            <h2 className="mb-2 text-sm font-semibold">Before this chapter</h2>
-            <ul className="flex flex-col gap-1 text-sm">
-              {prerequisites.map((prereq) => (
-                <li key={prereq.id}>
-                  <Link href={getChapterHref(prereq) as Route}>
-                    {prereq.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
+    <>
+      <ChapterLayout
+        chapter={chapter}
+        partTitle={part.title}
+        partHref={getPartHref(part)}
+        crumbs={crumbs}
+        toc={toc}
+        prerequisites={getPrerequisites(chapter.id)}
+        related={getRelatedChapters(chapter.id)}
+        position={getChapterPosition(chapter.id)}
+        previous={
+          previous
+            ? {
+                href: getChapterHref(previous),
+                label: previous.title,
+                meta: getPart(previous.part)?.title,
+              }
+            : null
+        }
+        next={
+          next
+            ? {
+                href: getChapterHref(next),
+                label: next.title,
+                meta: getPart(next.part)?.title,
+              }
+            : null
+        }
+      >
         {content ? (
-          <div className="container-prose max-w-none">
-            <content.Content />
-          </div>
+          <content.Content />
         ) : (
           <EmptyState
             icon={FileQuestion}
             title="This chapter hasn't been written yet"
             description="The curriculum structure is settled but the text isn't. Its place in the reading order, its prerequisites and what comes next are all shown here in the meantime."
-            action={<Link href="/learn">Back to the curriculum</Link>}
+            action={
+              <Link href={"/learn" as Route}>Back to the curriculum</Link>
+            }
           />
         )}
-
-        <Pagination
-          previous={
-            previous
-              ? {
-                  href: getChapterHref(previous) as Route,
-                  label: previous.title,
-                  meta: getPart(previous.part)?.title,
-                }
-              : null
-          }
-          next={
-            next
-              ? {
-                  href: getChapterHref(next) as Route,
-                  label: next.title,
-                  meta: getPart(next.part)?.title,
-                }
-              : null
-          }
-        />
-      </article>
-
-      {toc.length > 0 ? (
-        <aside className="hidden w-[240px] shrink-0 xl:block">
-          <div className="sticky top-10">
-            <TableOfContents items={toc} />
-          </div>
-        </aside>
-      ) : null}
+      </ChapterLayout>
 
       <JsonLd data={breadcrumbSchema(crumbs)} />
       <JsonLd
         data={articleSchema({
           title: chapter.title,
-          description: `${part.title}. ${chapter.readingTime} minute read.`,
+          description,
           path: `/learn/${part.slug}/${chapter.slug}`,
         })}
       />
-    </div>
+    </>
   );
 }

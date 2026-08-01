@@ -1,6 +1,35 @@
 import type { MDXComponents } from "mdx/types";
 import type { ComponentPropsWithoutRef } from "react";
 
+import {
+  ApiRequest,
+  ApiResponse,
+} from "@/components/content/code/http-exchange";
+import { JsonViewer } from "@/components/content/code/json-viewer";
+import { TerminalBlock } from "@/components/content/code/terminal-block";
+import { ComparisonTable } from "@/components/content/diagrams/comparison-table";
+import { DecisionTree } from "@/components/content/diagrams/decision-tree";
+import {
+  ArchitectureDiagram,
+  ConceptMap,
+  FlowDiagram,
+  SequenceDiagram,
+} from "@/components/content/diagrams/diagram-types";
+import { Figure } from "@/components/content/diagrams/figure";
+import { Timeline } from "@/components/content/diagrams/timeline";
+import { Definition } from "@/components/learning/definition";
+import { FurtherReading } from "@/components/learning/further-reading";
+import {
+  DidYouKnow,
+  InfoBox,
+  InterviewTip,
+  Remember,
+  SecurityNote,
+  Tip,
+  Warning,
+} from "@/components/learning/notes";
+import { BestPractice, CommonMistake } from "@/components/learning/practice";
+import { Summary } from "@/components/learning/summary";
 import { Callout } from "@/components/ui/callout";
 import { CodeBlock } from "@/components/ui/code-block";
 
@@ -99,8 +128,42 @@ const components: MDXComponents = {
 
   hr: () => <hr className="border-border-subtle my-12" />,
 
-  // Available to authors by name.
+  // ---- Available to chapter authors without an import ----
+
+  // Notes. Each means one thing; see components/learning/notes.tsx.
   Callout,
+  InfoBox,
+  Tip,
+  Warning,
+  SecurityNote,
+  Remember,
+  DidYouKnow,
+  InterviewTip,
+
+  // Structured teaching blocks. These have required props on purpose — a
+  // BestPractice without its reason, or a CommonMistake without "why it's
+  // tempting", won't compile.
+  Definition,
+  BestPractice,
+  CommonMistake,
+  Summary,
+  FurtherReading,
+
+  // Diagrams. All require `alt`, via Figure.
+  Figure,
+  FlowDiagram,
+  SequenceDiagram,
+  ArchitectureDiagram,
+  ConceptMap,
+  ComparisonTable,
+  Timeline,
+  DecisionTree,
+
+  // Code and HTTP.
+  TerminalBlock,
+  ApiRequest,
+  ApiResponse,
+  JsonViewer,
 };
 
 export function useMDXComponents(): MDXComponents {

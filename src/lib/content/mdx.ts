@@ -76,8 +76,26 @@ export async function getTableOfContents(
   locale: Locale = "en",
 ): Promise<TocEntry[]> {
   const source = await readSource(slug, locale);
-  if (!source) return [];
+  return source ? extractHeadings(source) : [];
+}
 
+/** Same thing for anything under content/{locale}/pages. */
+export async function getPageTableOfContents(
+  slug: string,
+  locale: Locale = "en",
+): Promise<TocEntry[]> {
+  try {
+    const source = await fs.readFile(
+      path.join(contentPaths.pages(locale), `${slug}.mdx`),
+      "utf8",
+    );
+    return extractHeadings(source);
+  } catch {
+    return [];
+  }
+}
+
+function extractHeadings(source: string): TocEntry[] {
   const entries: TocEntry[] = [];
   let insideFence = false;
 
@@ -126,6 +144,15 @@ function slugifyHeading(text: string): string {
  */
 export async function loadChapterContent(slug: string, locale: Locale = "en") {
   if (locale !== "en") return null;
+
+  // Check the file exists before importing rather than letting the import
+  // throw. Exceptions as control flow is bad enough on its own, and it also
+  // means an unwritten chapter doesn't produce a stack trace on every render.
+  //
+  // Note: while content/en/chapters is empty, Turbopack logs a "can't resolve
+  // <dynamic>.mdx" warning at build. It's harmless — there's no module map to
+  // build yet — and it goes away as soon as the first chapter is written.
+  if (!(await chapterExists(slug, locale))) return null;
 
   try {
     const mod = await import(`@/content/en/chapters/${slug}.mdx`);

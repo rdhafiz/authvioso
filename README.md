@@ -170,6 +170,48 @@ At this point the route exists. It'll render with a "not written yet" panel.
 filename must match the slug exactly. Restart isn't needed; the route picks it
 up on next request.
 
+### Frontmatter
+
+Exported as `metadata` from the MDX file. Validated by
+`src/lib/content/schema.ts` — unknown tags and a malformed `reviewed` date are
+errors, not warnings, because a typo'd tag silently drops the chapter out of
+every filter that should have found it.
+
+```mdx
+export const metadata = {
+  id: "C16",
+  title: "Cookie Attributes and What Each One Defends",
+  description:
+    "One or two sentences, written for someone deciding whether to open it.",
+  objective:
+    "state what each cookie attribute defends against, and choose a correct set for a given case",
+  objectives: [
+    "name what each attribute defends",
+    "choose an attribute set for a stated situation",
+  ],
+  nodes: ["K-0141", "K-0142"],
+  methods: ["session-cookie"],
+  threats: ["csrf", "xss"],
+  standards: ["cookies", "http"],
+  status: "draft",
+  version: "0.1",
+  reviewed: "2026-08-01",
+  owner: "Ridwanul Hafiz",
+  editions: ["en"],
+};
+```
+
+`objective` is the single testable outcome. `objectives` is the three-to-six
+list shown at the top of the chapter.
+
+Structural fields — `part`, `level`, `readingTime`, `requires` — live in
+`curriculum.ts` rather than here, because the site needs them before the
+chapter exists.
+
+Tag vocabularies are closed lists in `src/types/content.ts`. `standards` names
+specifications and algorithms only, never a framework or product: if you could
+buy it, it isn't a tag.
+
 ---
 
 ## How to add MDX content
@@ -203,6 +245,72 @@ Notes:
   will copy it anyway.
 - To register a new component for authors, add it to the `components` object
   in `src/mdx-components.tsx`.
+
+### Available components
+
+All of these work in MDX without an import. See
+`/preview/chapter` for every one of them rendered on a page.
+
+**Notes** — each means one thing; don't substitute for emphasis.
+
+| Component      | For                                              |
+| -------------- | ------------------------------------------------ |
+| `InfoBox`      | Context or a cross-reference                     |
+| `Tip`          | Makes life easier. Never load-bearing            |
+| `Warning`      | A real risk, with its conditions stated          |
+| `SecurityNote` | A security consideration — must state its limits |
+| `Remember`     | Worth carrying into the next chapter             |
+| `DidYouKnow`   | Background. The chapter works without it         |
+| `InterviewTip` | How this gets asked out loud                     |
+| `Callout`      | The raw component, if none of the above fit      |
+
+**Teaching blocks** — these have required props, so an incomplete one won't
+compile.
+
+| Component        | Required props                       |
+| ---------------- | ------------------------------------ |
+| `Definition`     | `term`                               |
+| `BestPractice`   | `reason`, optional `when`            |
+| `CommonMistake`  | `tempting`, `consequence`, `instead` |
+| `Summary`        | optional `tradeoff`                  |
+| `FurtherReading` | `items[]` with `adds` and `checked`  |
+
+`CommonMistake` requires `tempting` on purpose. Readers don't recognise
+themselves in a list of things careless people do — they recognise themselves
+in something that looked right at the time.
+
+**Diagrams** — all require `alt`, enforced by `Figure`.
+
+| Component             | For                                          |
+| --------------------- | -------------------------------------------- |
+| `SequenceDiagram`     | Ordered exchanges. Most protocol chapters    |
+| `FlowDiagram`         | A path between parties, order implied        |
+| `ArchitectureDiagram` | Components, no time dimension                |
+| `ConceptMap`          | How ideas relate. Use sparingly              |
+| `ComparisonTable`     | Options against criteria. Declares no winner |
+| `Timeline`            | An ordered sequence, one participant         |
+| `DecisionTree`        | Branch on constraints, never on preference   |
+| `Figure`              | Wrap anything else, still requires `alt`     |
+
+`alt` is not a caption. "Diagram of the authorization code flow" conveys
+nothing — it needs participants, order, and what each step carries.
+
+The first four render through Mermaid, which is **lazily imported** and only
+loads on pages that use one. It's an authoring convenience: published chapters
+should mostly ship authored SVG, which is smaller, needs no JavaScript, and
+gives real control over the visual language.
+
+**Code and HTTP**
+
+| Component       | For                                       |
+| --------------- | ----------------------------------------- |
+| `TerminalBlock` | Shell commands. Copy excludes the prompt  |
+| `ApiRequest`    | Method, path, headers, body               |
+| `ApiResponse`   | Status, headers, body                     |
+| `JsonViewer`    | Collapsible JSON with per-key annotations |
+
+Fenced code blocks are highlighted at build time by Shiki and get a copy
+button automatically. Never put a real credential in an example — truncate it.
 
 ### Adding a plugin
 

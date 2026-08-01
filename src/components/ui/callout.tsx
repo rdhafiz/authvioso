@@ -1,9 +1,12 @@
 import {
   AlertTriangle,
   Ban,
+  BrainCircuit,
   Info,
   Lightbulb,
+  MessageCircleQuestion,
   ShieldAlert,
+  Sparkles,
   TriangleAlert,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -27,14 +30,17 @@ import { cn } from "@/lib/utils";
  * label does the work the reader's attention won't.
  */
 
-type CalloutVariant =
+export type CalloutVariant =
   | "note"
   | "tip"
   | "warning"
   | "danger"
   | "security"
   | "deprecated"
-  | "insecure";
+  | "insecure"
+  | "remember"
+  | "did-you-know"
+  | "interview";
 
 const variants: Record<
   CalloutVariant,
@@ -82,6 +88,24 @@ const variants: Record<
     // Heavier border than the others, on purpose.
     className: "border-2 border-status-danger bg-status-danger-surface",
     iconClass: "text-status-danger",
+  },
+  remember: {
+    label: "Remember",
+    icon: BrainCircuit,
+    className: "border-border-strong bg-surface-sunken",
+    iconClass: "text-text-secondary",
+  },
+  "did-you-know": {
+    label: "Did you know",
+    icon: Sparkles,
+    className: "border-border-strong bg-surface-sunken",
+    iconClass: "text-text-secondary",
+  },
+  interview: {
+    label: "In an interview",
+    icon: MessageCircleQuestion,
+    className: "border-border-strong bg-surface-sunken",
+    iconClass: "text-text-secondary",
   },
 };
 
