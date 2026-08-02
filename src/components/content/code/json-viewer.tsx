@@ -68,7 +68,7 @@ function Node({
         ) : null}
         <Primitive value={value} />
         {keyName && annotations[keyName] ? (
-          <span className="text-text-muted ml-3 font-sans text-xs">
+          <span className="text-text-secondary ml-3 font-sans text-xs">
             {annotations[keyName]}
           </span>
         ) : null}
@@ -92,16 +92,16 @@ function Node({
         className="hover:text-text-primary inline-flex items-center gap-1"
       >
         {open ? (
-          <ChevronDown className="size-3" aria-hidden />
+          <ChevronDown className="size-icon-xs" aria-hidden />
         ) : (
-          <ChevronRight className="size-3" aria-hidden />
+          <ChevronRight className="size-icon-xs" aria-hidden />
         )}
         {keyName ? (
           <span className="text-text-link">&quot;{keyName}&quot;: </span>
         ) : null}
         <span>{open_}</span>
         {!open ? (
-          <span className="text-text-muted">
+          <span className="text-text-secondary">
             {entries.length} {entries.length === 1 ? "entry" : "entries"}
             {close}
           </span>
@@ -137,5 +137,5 @@ function Primitive({ value }: { value: Json }) {
   if (typeof value === "boolean") {
     return <span className="text-status-info">{String(value)}</span>;
   }
-  return <span className="text-text-muted">null</span>;
+  return <span className="text-text-secondary">null</span>;
 }

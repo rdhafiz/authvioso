@@ -36,7 +36,7 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="border-border-subtle text-text-muted mt-10 flex flex-col gap-2 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-border-subtle text-text-secondary mt-10 flex flex-col gap-2 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
           <p>
             {siteConfig.name} — {siteConfig.descriptor}
           </p>

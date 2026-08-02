@@ -22,12 +22,18 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-// Needed for the Bangla edition. Worth checking the subset stays "bengali"
-// if we ever add another script.
+// For the Bangla edition. preload is off on purpose: this face is 108 KB and
+// no English page renders a single Bengali glyph, so preloading it was ~25% of
+// page weight spent on nothing for effectively every current reader.
+//
+// The variable is still declared, so the moment Bangla routing lands the font
+// resolves normally — it just isn't fetched until something actually needs it.
+// Turn preload back on for the /bn tree when that ships.
 const notoSansBengali = Noto_Sans_Bengali({
   subsets: ["bengali"],
   variable: "--font-noto-bengali",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = rootMetadata;

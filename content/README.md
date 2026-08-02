@@ -2,7 +2,7 @@
 
 Chapters and the knowledge graph. Empty until the curriculum is written.
 
-```
+```text
 content/
   en/chapters/     MDX, one file per chapter
   en/pages/

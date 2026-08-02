@@ -73,10 +73,9 @@
 
   --av-text-primary: var(--av-neutral-900);
   --av-text-secondary: var(--av-neutral-600);
-  --av-text-muted: var(--av-neutral-500);
   --av-text-inverse: var(--av-neutral-0);
   --av-text-link: var(--av-blue-600);
-  --av-text-accent: var(--av-teal-600);
+  --av-text-accent: var(--av-teal-700);
 
   --av-surface-page: var(--av-neutral-0);
   --av-surface-raised: var(--av-neutral-50);
@@ -86,6 +85,9 @@
   --av-border-subtle: var(--av-neutral-200);
   --av-border-strong: var(--av-neutral-300);
   --av-border-focus: var(--av-blue-600);
+  /* Control boundaries need 3:1 as UI components. border-subtle and
+     border-strong are decorative dividers and are exempt. */
+  --av-border-control: var(--av-neutral-500);
 
   /* Status colours say something about state. Never use them for decoration,
      and never on their own — pair them with an icon and a word, otherwise
@@ -108,7 +110,7 @@
   --av-diagram-authz: var(--av-teal-600);
   --av-diagram-resource: var(--av-neutral-900);
   --av-diagram-attacker: var(--av-red-700);
-  --av-diagram-boundary: var(--av-neutral-400);
+  --av-diagram-boundary: var(--av-neutral-500);
 
   /* ---- Scales --------------------------------------------------------- */
 
@@ -128,9 +130,14 @@
   --av-space-24: 6rem;
 
   /* 1.25 ratio. rem throughout so browser font settings still work. */
-  --av-font-size-xs: 0.64rem;
+  /* sm is the floor for any text. There is no xs — 10px is not a size
+     anything should be set in, and having the token invites the mistake. */
   --av-font-size-sm: 0.8rem;
   --av-font-size-base: 1rem;
+  /* Code only. Off the 1.25 scale on purpose: JetBrains Mono at 0.875rem
+     sits optically level with Inter at 1rem, and the scale can't produce
+     the right size for a second typeface. */
+  --av-font-size-code: 0.875rem;
   --av-font-size-md: 1.25rem;
   --av-font-size-lg: 1.563rem;
   --av-font-size-xl: 1.953rem;
@@ -173,6 +180,44 @@
   --av-border-width: 1px;
   --av-border-width-strong: 2px;
 
+  /* ---- Diagram geometry ----------------------------------------------- */
+
+  /* DSY-008 §1 specified these and nothing implemented them, so the only
+     shared thing diagrams had was six colours. Fifty-seven chapters of
+     diagrams drawn without them would have established a de facto standard
+     around diagram twenty and contradicted it at diagram forty. */
+  --av-diagram-stroke-width: 2px;
+  --av-diagram-stroke-width-emphasis: 3px;
+  --av-diagram-radius: var(--av-radius-md);
+  --av-diagram-label-size: var(--av-font-size-sm);
+  --av-diagram-label-weight: var(--av-font-weight-medium);
+  --av-diagram-gap: var(--av-space-6);
+  --av-diagram-arrow-size: 8px;
+  /* Dashed enclosure for trust boundaries. Data crossing one is where most
+     authentication mistakes happen, so the treatment is fixed, not per-diagram. */
+  --av-diagram-boundary-dash: 6 4;
+
+  /* ---- Component tier -------------------------------------------------- */
+
+  /* The third tier DSY-012 §0 specifies. Deliberately small: a component
+     token that just restates a semantic one is noise. These exist because
+     each is used in three or more places and none of them is expressible as
+     a semantic role. */
+  --av-control-height-sm: 2rem;
+  --av-control-height-md: 2.5rem;
+  --av-control-height-lg: 3rem;
+
+  --av-focus-ring-width: var(--av-border-width-strong);
+  --av-focus-ring-offset: 2px;
+
+  --av-callout-padding: var(--av-space-4);
+  --av-callout-gap: var(--av-space-3);
+  --av-callout-border-width: var(--av-border-width-strong);
+
+  --av-code-block-padding: var(--av-space-4);
+  --av-card-padding: var(--av-space-6);
+  --av-card-gap: var(--av-space-4);
+
   --av-duration-instant: 100ms;
   --av-duration-fast: 150ms;
   --av-duration-normal: 250ms;
@@ -199,9 +244,8 @@
 .dark {
   --av-text-primary: var(--av-neutral-100);
   --av-text-secondary: var(--av-neutral-400);
-  --av-text-muted: var(--av-neutral-400);
   --av-text-inverse: var(--av-neutral-900);
-  --av-text-link: var(--av-blue-400);
+  --av-text-link: var(--av-blue-300);
   --av-text-accent: var(--av-teal-400);
 
   --av-surface-page: var(--av-neutral-900);
@@ -211,7 +255,8 @@
 
   --av-border-subtle: var(--av-neutral-700);
   --av-border-strong: var(--av-neutral-600);
-  --av-border-focus: var(--av-blue-400);
+  --av-border-focus: var(--av-blue-300);
+  --av-border-control: var(--av-neutral-500);
 
   --av-status-success: var(--av-green-400);
   --av-status-warning: var(--av-amber-400);

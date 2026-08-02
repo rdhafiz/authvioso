@@ -30,7 +30,7 @@ export function LearningObjectives({ items }: { items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex gap-2 text-sm">
             <ArrowRight
-              className="text-text-muted mt-0.5 size-4 shrink-0"
+              className="text-text-secondary mt-0.5 size-4 shrink-0"
               aria-hidden
             />
             <span>{item}</span>
@@ -97,7 +97,7 @@ export function RelatedTopics({ items }: { items: ChapterMeta[] }) {
               <span className="text-text-primary font-medium">
                 {chapter.title}
               </span>
-              <span className="text-text-muted mt-1 block capitalize">
+              <span className="text-text-secondary mt-1 block capitalize">
                 {chapter.level} · {chapter.readingTime} min
               </span>
             </Link>

@@ -1,0 +1,36 @@
+# Link validation. SC-D6 makes a broken internal link release-blocking, and
+# the documentation set is held together by cross-references — this is the
+# check that stops those rotting silently.
+#
+# Runs against built HTML, not source, so a link that survives Markdown and
+# breaks during rendering is still caught.
+
+name: Link validation
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download built HTML
+        uses: actions/download-artifact@v4
+        with:
+          name: built-html
+          path: built
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --config lychee.toml
+            --no-progress
+            built/**/*.html
+            **/*.md
+          fail: true

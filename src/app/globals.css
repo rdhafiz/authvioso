@@ -42,7 +42,7 @@
   /* Our roles, exposed as utilities: text-text-link, bg-surface-raised, etc. */
   --color-text-primary: var(--av-text-primary);
   --color-text-secondary: var(--av-text-secondary);
-  --color-text-muted: var(--av-text-muted);
+  --color-text-secondary: var(--av-text-secondary);
   --color-text-inverse: var(--av-text-inverse);
   --color-text-link: var(--av-text-link);
   --color-text-accent: var(--av-text-accent);
@@ -55,6 +55,7 @@
   --color-border-subtle: var(--av-border-subtle);
   --color-border-strong: var(--av-border-strong);
   --color-border-focus: var(--av-border-focus);
+  --color-border-control: var(--av-border-control);
 
   --color-status-success: var(--av-status-success);
   --color-status-warning: var(--av-status-warning);
@@ -72,7 +73,7 @@
   --color-diagram-attacker: var(--av-diagram-attacker);
   --color-diagram-boundary: var(--av-diagram-boundary);
 
-  --text-xs: var(--av-font-size-xs);
+  --text-code: var(--av-font-size-code);
   --text-sm: var(--av-font-size-sm);
   --text-base: var(--av-font-size-base);
   --text-md: var(--av-font-size-md);
@@ -81,11 +82,87 @@
   --text-2xl: var(--av-font-size-2xl);
   --text-3xl: var(--av-font-size-3xl);
 
+  /*
+    Composite text styles — the layer DSY-012 §2 requires and the codebase was
+    missing. Tailwind v4 lets a --text-* entry carry line-height, weight and
+    tracking as modifiers, so `text-h2` applies all four in one class. That's
+    exactly the named bundle the design system specifies.
+
+    Components use these. A component setting size and weight separately is
+    re-deciding what an h2 looks like, which is the drift the token tiers
+    exist to prevent.
+  */
+  --text-display: var(--av-font-size-3xl);
+  --text-display--line-height: 1.1;
+  --text-display--font-weight: var(--av-font-weight-bold);
+  --text-display--letter-spacing: -0.02em;
+
+  --text-h1: var(--av-font-size-2xl);
+  --text-h1--line-height: var(--av-line-height-tight);
+  --text-h1--font-weight: var(--av-font-weight-bold);
+  --text-h1--letter-spacing: -0.015em;
+
+  --text-h2: var(--av-font-size-xl);
+  --text-h2--line-height: 1.2;
+  --text-h2--font-weight: var(--av-font-weight-semibold);
+  --text-h2--letter-spacing: -0.01em;
+
+  --text-h3: var(--av-font-size-lg);
+  --text-h3--line-height: 1.25;
+  --text-h3--font-weight: var(--av-font-weight-semibold);
+
+  --text-h4: var(--av-font-size-md);
+  --text-h4--line-height: var(--av-line-height-snug);
+  --text-h4--font-weight: var(--av-font-weight-semibold);
+
+  --text-overline: var(--av-font-size-sm);
+  --text-overline--line-height: 1.4;
+  --text-overline--font-weight: var(--av-font-weight-semibold);
+  --text-overline--letter-spacing: var(--av-letter-spacing-wide);
+
+  --text-lead: var(--av-font-size-md);
+  --text-lead--line-height: 1.6;
+  --text-lead--font-weight: var(--av-font-weight-regular);
+
+  --text-body: var(--av-font-size-base);
+  --text-body--line-height: var(--av-line-height-relaxed);
+  --text-body--font-weight: var(--av-font-weight-regular);
+
+  --text-body-sm: var(--av-font-size-sm);
+  --text-body-sm--line-height: var(--av-line-height-normal);
+  --text-body-sm--font-weight: var(--av-font-weight-regular);
+
+  --text-caption: var(--av-font-size-sm);
+  --text-caption--line-height: var(--av-line-height-normal);
+  --text-caption--font-weight: var(--av-font-weight-regular);
+
+  --text-label: var(--av-font-size-sm);
+  --text-label--line-height: 1.4;
+  --text-label--font-weight: var(--av-font-weight-medium);
+
+  --text-code--line-height: 1.6;
+
+  /* Icon sizes. DSY-007 §2 names five; nothing enforced them, so 12px, 28px
+     and 36px had all crept in — 12px being below the smallest legible size
+     for a 1.5 stroke. */
+  --size-icon-xs: 1rem;
+  --size-icon-sm: 1.25rem;
+  --size-icon-md: 1.5rem;
+  --size-icon-lg: 2rem;
+  --size-icon-xl: 2.5rem;
+
   --radius-sm: var(--av-radius-sm);
   --radius-md: var(--av-radius-md);
   --radius-lg: var(--av-radius-lg);
   --radius-xl: var(--av-radius-lg);
   --radius-full: var(--av-radius-full);
+
+  --spacing-callout: var(--av-callout-padding);
+  --spacing-card: var(--av-card-padding);
+  --spacing-code-block: var(--av-code-block-padding);
+  --height-control-sm: var(--av-control-height-sm);
+  --height-control-md: var(--av-control-height-md);
+  --height-control-lg: var(--av-control-height-lg);
 
   --container-prose: var(--av-container-prose);
   --container-wide: var(--av-container-wide);
@@ -111,7 +188,7 @@
   --secondary: var(--av-surface-sunken);
   --secondary-foreground: var(--av-text-primary);
   --muted: var(--av-surface-sunken);
-  --muted-foreground: var(--av-text-muted);
+  --muted-foreground: var(--av-text-secondary);
   --accent: var(--av-surface-accent);
   --accent-foreground: var(--av-text-link);
   --destructive: var(--av-status-danger);

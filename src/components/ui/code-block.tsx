@@ -29,7 +29,7 @@ export function CodeBlock({
   return (
     <figure className="group border-border-subtle bg-surface-raised relative my-6 overflow-hidden rounded-md border">
       {filename ? (
-        <figcaption className="border-border-subtle text-text-muted border-b px-4 py-2 font-mono text-sm">
+        <figcaption className="border-border-subtle text-text-secondary border-b px-4 py-2 font-mono text-sm">
           {filename}
         </figcaption>
       ) : null}

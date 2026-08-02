@@ -1,0 +1,23 @@
+# Markdown lint. The documentation set is the project's primary output, and
+# a malformed table or broken heading level is a defect in it like any other.
+
+name: Markdown lint
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:md

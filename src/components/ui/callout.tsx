@@ -135,7 +135,10 @@ export function Callout({
       )}
     >
       <p className="mb-2 flex items-center gap-2 font-semibold">
-        <Icon className={cn("size-4 shrink-0", config.iconClass)} aria-hidden />
+        <Icon
+          className={cn("size-icon-xs shrink-0", config.iconClass)}
+          aria-hidden
+        />
         <span>{title ?? config.label}</span>
       </p>
       <div className="[&>*:last-child]:mb-0 [&>p]:mb-2">{children}</div>

@@ -65,7 +65,7 @@ written yet" panel, rather than 404ing.
 
 `src/styles/tokens.css` is the single source. Three layers:
 
-```
+```text
 primitives   --av-blue-600      literal, same in both themes
 semantics    --av-text-link     a role, re-resolves per theme
 components   built from semantics
@@ -93,7 +93,7 @@ else is server-rendered, and all reading works without JavaScript.
 
 ## Folder structure
 
-```
+```text
 authvioso/
 ├── content/
 │   ├── en/chapters/*.mdx        curriculum text

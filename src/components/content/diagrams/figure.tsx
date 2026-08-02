@@ -36,12 +36,12 @@ export function Figure({
         {children}
       </div>
 
-      <figcaption className="text-text-muted mt-2 text-sm">
+      <figcaption className="text-text-secondary mt-2 text-sm">
         {caption}
       </figcaption>
 
       <details className="mt-2">
-        <summary className="text-text-muted cursor-pointer text-sm">
+        <summary className="text-text-secondary cursor-pointer text-sm">
           Text description
         </summary>
         <p className="text-text-secondary mt-2 text-sm">{alt}</p>

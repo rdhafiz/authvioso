@@ -24,7 +24,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
-      <ol className="text-text-muted flex flex-wrap items-center gap-1 text-sm">
+      <ol className="text-text-secondary flex flex-wrap items-center gap-1 text-sm">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (
@@ -45,7 +45,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
                 </span>
               )}
               {!isLast ? (
-                <ChevronRight className="size-3 shrink-0" aria-hidden />
+                <ChevronRight className="size-icon-xs shrink-0" aria-hidden />
               ) : null}
             </li>
           );

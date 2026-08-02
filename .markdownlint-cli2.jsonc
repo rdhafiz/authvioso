@@ -1,0 +1,49 @@
+// Markdown lint. Rules that catch real defects are on; rules that enforce a
+// house style we have not chosen are off, because a linter arguing about
+// taste gets disabled entirely within a month.
+{
+  "config": {
+    "default": true,
+
+    // Long lines are fine. Prose wraps in the editor, and hard-wrapping
+    // markdown makes diffs unreadable.
+    "MD013": false,
+
+    // Duplicate headings are legitimate across sections — several documents
+    // have "Rules" under more than one heading, deliberately.
+    "MD024": { "siblings_only": true },
+
+    // The documents lead with an H1 title and then use H1 for sections, which
+    // is the house structure. It reads correctly and renders correctly.
+    "MD025": false,
+
+    // Emphasis used as a heading is a real smell, but the specs use bold
+    // lead-ins inside list items constantly and correctly.
+    "MD036": false,
+
+    // Bare URLs appear inside code fences and example output.
+    "MD034": false,
+
+    // Inline HTML is used for line breaks inside table cells.
+    "MD033": false,
+
+    // Table pipe spacing. The documents use the compact separator form
+    // consistently; this rule fires 4,599 times on pure cosmetics and would
+    // drown every real finding. Consistency here is already enforced by the
+    // documents being written to one template.
+    "MD060": false,
+
+    // Ordered lists that continue across a sub-heading. KG-003 §5 numbers
+    // thirteen rules in three groups and cites them by number in prose, so
+    // restarting each group at 1 would break the references.
+    "MD029": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "node_modules/**",
+    ".next/**",
+    "CHANGELOG.md",
+    "CLAUDE.md",
+    "AGENTS.md",
+  ],
+}

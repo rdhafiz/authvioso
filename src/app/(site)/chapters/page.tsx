@@ -63,10 +63,10 @@ export default function ChaptersPage() {
                         {chapter.title}
                       </Link>
                     </td>
-                    <td className="text-text-muted w-32 py-2 capitalize">
+                    <td className="text-text-secondary w-32 py-2 capitalize">
                       {chapter.level}
                     </td>
-                    <td className="text-text-muted w-20 py-2 text-right tabular-nums">
+                    <td className="text-text-secondary w-20 py-2 text-right tabular-nums">
                       {chapter.readingTime} min
                     </td>
                   </tr>

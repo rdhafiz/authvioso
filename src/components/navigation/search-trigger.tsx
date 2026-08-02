@@ -42,11 +42,11 @@ export function SearchTrigger() {
     <button
       type="button"
       onClick={() => router.push("/search")}
-      className="border-border-subtle text-text-muted hover:border-border-strong hover:text-text-primary inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors"
+      className="border-border-subtle text-text-secondary hover:border-border-strong hover:text-text-primary inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm transition-colors"
     >
-      <Search className="size-4" aria-hidden />
+      <Search className="size-icon-xs" aria-hidden />
       <span>Search</span>
-      <kbd className="border-border-subtle text-text-muted ml-2 hidden rounded border px-1.5 py-0.5 font-mono text-xs sm:inline">
+      <kbd className="border-border-subtle text-text-secondary ml-2 hidden rounded border px-1.5 py-0.5 font-mono text-xs sm:inline">
         {modifier} K
       </kbd>
     </button>

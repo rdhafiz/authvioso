@@ -1,0 +1,40 @@
+# Build. This is what makes "main is always releasable" (WKF-004 §1) a
+# checkable claim rather than an intention.
+#
+# The built output is uploaded so link validation can run against the real
+# HTML rather than against the source, which is the only way to catch a link
+# that breaks during rendering.
+
+name: Build
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Record page count
+        run: |
+          COUNT=$(find .next/server/app -name '*.html' | wc -l)
+          echo "Prerendered pages: $COUNT" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload built HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-html
+          path: .next/server/app/**/*.html
+          retention-days: 1
+          if-no-files-found: error

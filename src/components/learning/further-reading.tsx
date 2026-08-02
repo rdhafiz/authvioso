@@ -45,11 +45,11 @@ export function FurtherReading({ items }: { items: Reading[] }) {
               className="inline-flex items-baseline gap-1 font-medium"
             >
               {item.title}
-              <ExternalLink className="size-3 shrink-0" aria-hidden />
+              <ExternalLink className="size-icon-xs shrink-0" aria-hidden />
               <span className="sr-only">(external link)</span>
             </a>
             <p className="text-text-secondary mt-1 text-sm">{item.adds}</p>
-            <p className="text-text-muted mt-1 text-sm">
+            <p className="text-text-secondary mt-1 text-sm">
               {item.source}
               {item.vendor ? " · vendor documentation" : null}
               {" · checked "}

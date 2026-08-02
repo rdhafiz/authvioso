@@ -36,15 +36,15 @@ export function Pagination({
           href={previous.href}
           className="group border-border-subtle hover:border-border-strong flex flex-col gap-1 rounded-md border p-4 no-underline"
         >
-          <span className="text-text-muted flex items-center gap-1 text-sm">
-            <ArrowLeft className="size-3" aria-hidden />
+          <span className="text-text-secondary flex items-center gap-1 text-sm">
+            <ArrowLeft className="size-icon-xs" aria-hidden />
             Previous
           </span>
           <span className="text-text-primary font-medium">
             {previous.label}
           </span>
           {previous.meta ? (
-            <span className="text-text-muted text-sm">{previous.meta}</span>
+            <span className="text-text-secondary text-sm">{previous.meta}</span>
           ) : null}
         </Link>
       ) : (
@@ -57,13 +57,13 @@ export function Pagination({
           href={next.href}
           className="group border-border-subtle hover:border-border-strong flex flex-col gap-1 rounded-md border p-4 text-right no-underline sm:col-start-2"
         >
-          <span className="text-text-muted flex items-center justify-end gap-1 text-sm">
+          <span className="text-text-secondary flex items-center justify-end gap-1 text-sm">
             Next
-            <ArrowRight className="size-3" aria-hidden />
+            <ArrowRight className="size-icon-xs" aria-hidden />
           </span>
           <span className="text-text-primary font-medium">{next.label}</span>
           {next.meta ? (
-            <span className="text-text-muted text-sm">{next.meta}</span>
+            <span className="text-text-secondary text-sm">{next.meta}</span>
           ) : null}
         </Link>
       ) : null}

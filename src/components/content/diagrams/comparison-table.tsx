@@ -72,7 +72,7 @@ export function ComparisonTable({
                 >
                   {row.criterion}
                   {row.note ? (
-                    <span className="text-text-muted mt-1 block text-xs font-normal">
+                    <span className="text-text-secondary mt-1 block text-xs font-normal">
                       {row.note}
                     </span>
                   ) : null}
@@ -87,7 +87,7 @@ export function ComparisonTable({
           </tbody>
         </table>
       </div>
-      <figcaption className="text-text-muted mt-2 text-sm">
+      <figcaption className="text-text-secondary mt-2 text-sm">
         {caption}
       </figcaption>
     </figure>
@@ -101,8 +101,8 @@ export function ComparisonTable({
 function Cell({ value }: { value: CellValue }) {
   if (value === null) {
     return (
-      <span className="text-text-muted inline-flex items-center gap-1.5">
-        <Minus className="size-4" aria-hidden />
+      <span className="text-text-secondary inline-flex items-center gap-1.5">
+        <Minus className="size-icon-xs" aria-hidden />
         Not applicable
       </span>
     );
@@ -111,12 +111,12 @@ function Cell({ value }: { value: CellValue }) {
   if (typeof value === "boolean") {
     return value ? (
       <span className="text-status-success inline-flex items-center gap-1.5">
-        <Check className="size-4" aria-hidden />
+        <Check className="size-icon-xs" aria-hidden />
         Yes
       </span>
     ) : (
       <span className="text-status-danger inline-flex items-center gap-1.5">
-        <X className="size-4" aria-hidden />
+        <X className="size-icon-xs" aria-hidden />
         No
       </span>
     );

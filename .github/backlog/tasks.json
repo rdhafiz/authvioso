@@ -1,0 +1,51 @@
+[
+  {
+    "id": "IMP-001",
+    "title": "IMP-001 — Semantic StatusBadge",
+    "milestone": "M3 — Platform skeleton",
+    "labels": ["implementation", "waiting-trigger", "accessibility"],
+    "body": "IMP-001.md"
+  },
+  {
+    "id": "IMP-002",
+    "title": "IMP-002 — Error reporting component and route",
+    "milestone": "M4 — First part complete",
+    "labels": ["implementation", "waiting-trigger"],
+    "body": "IMP-002.md"
+  },
+  {
+    "id": "IMP-003",
+    "title": "IMP-003 — Touch target remediation",
+    "milestone": "M4 — First part complete",
+    "labels": ["implementation", "waiting-trigger", "accessibility"],
+    "body": "IMP-003.md"
+  },
+  {
+    "id": "IMP-004",
+    "title": "IMP-004 — Search index and search UI",
+    "milestone": "M5 — Alpha",
+    "labels": ["implementation", "waiting-trigger"],
+    "body": "IMP-004.md"
+  },
+  {
+    "id": "IMP-005",
+    "title": "IMP-005 — Progress export, import, and clear",
+    "milestone": "M9 — Beta",
+    "labels": ["implementation", "waiting-trigger", "blocked"],
+    "body": "IMP-005.md"
+  },
+  {
+    "id": "IMP-006",
+    "title": "IMP-006 — Remaining CI validation checks",
+    "milestone": "M6 — Content complete",
+    "labels": ["implementation", "waiting-trigger", "ci"],
+    "body": "IMP-006.md"
+  },
+  {
+    "id": "IMP-007",
+    "title": "IMP-007 — Accessibility verification passes",
+    "milestone": "M12 — v1.0",
+    "labels": ["implementation", "waiting-trigger", "accessibility"],
+    "body": "IMP-007.md"
+  }
+]

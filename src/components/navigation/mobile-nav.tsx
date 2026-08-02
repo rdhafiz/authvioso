@@ -74,9 +74,9 @@ export function MobileNav() {
         className="text-text-secondary hover:text-text-primary inline-flex size-9 items-center justify-center rounded-md"
       >
         {open ? (
-          <X className="size-5" aria-hidden />
+          <X className="size-icon-sm" aria-hidden />
         ) : (
-          <Menu className="size-5" aria-hidden />
+          <Menu className="size-icon-sm" aria-hidden />
         )}
         <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
       </button>
@@ -97,7 +97,7 @@ export function MobileNav() {
                   >
                     {item.label}
                     {item.description ? (
-                      <span className="text-text-muted block text-sm">
+                      <span className="text-text-secondary block text-sm">
                         {item.description}
                       </span>
                     ) : null}

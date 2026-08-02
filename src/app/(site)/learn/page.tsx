@@ -29,7 +29,7 @@ export default function LearnPage() {
     <div className="container-prose max-w-none">
       <header className="mb-10">
         <h1 className="text-2xl font-bold">Curriculum</h1>
-        <p className="text-text-muted mt-3 flex flex-wrap gap-x-4 text-sm">
+        <p className="text-text-secondary mt-3 flex flex-wrap gap-x-4 text-sm">
           <span>{parts.length} parts</span>
           <span>{getAllChapters().length} chapters</span>
           <span>~{Math.round(totalMinutes / 60)} hours reading</span>
@@ -45,14 +45,14 @@ export default function LearnPage() {
                 href={`/learn/${part.slug}` as Route}
                 className="border-border-subtle hover:border-border-strong block rounded-md border p-5 no-underline"
               >
-                <p className="text-text-muted mb-1 text-sm">
+                <p className="text-text-secondary mb-1 text-sm">
                   Part {index + 1} · {part.level}
                 </p>
                 <h2 className="text-text-primary text-md font-semibold">
                   {part.title}
                 </h2>
                 <p className="text-text-secondary mt-2">{part.question}</p>
-                <p className="text-text-muted mt-3 text-sm">
+                <p className="text-text-secondary mt-3 text-sm">
                   {chapters.length} chapters · {getPartReadingTime(part.id)} min
                 </p>
               </Link>

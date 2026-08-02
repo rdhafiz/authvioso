@@ -35,7 +35,7 @@ export function ChapterHeader({
 }) {
   return (
     <header className="mb-8">
-      <p className="text-text-muted mb-2 text-sm">
+      <p className="text-text-secondary mb-2 text-sm">
         <Link href={partHref} className="no-underline">
           {partTitle}
         </Link>
@@ -52,13 +52,13 @@ export function ChapterHeader({
       <h1 className="text-2xl font-bold">{title}</h1>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-        <span className="text-text-muted inline-flex items-center gap-1.5 text-sm">
-          <Layers className="size-4" aria-hidden />
+        <span className="text-text-secondary inline-flex items-center gap-1.5 text-sm">
+          <Layers className="size-icon-xs" aria-hidden />
           <span className="capitalize">{level}</span>
         </span>
 
-        <span className="text-text-muted inline-flex items-center gap-1.5 text-sm">
-          <Clock className="size-4" aria-hidden />
+        <span className="text-text-secondary inline-flex items-center gap-1.5 text-sm">
+          <Clock className="size-icon-xs" aria-hidden />
           {readingTime} min read
         </span>
 

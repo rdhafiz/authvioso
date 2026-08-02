@@ -57,7 +57,7 @@ export function TableOfContents({ items }: { items: TocEntry[] }) {
                 "block no-underline transition-colors",
                 activeId === item.id
                   ? "text-text-link font-medium"
-                  : "text-text-muted hover:text-text-primary",
+                  : "text-text-secondary hover:text-text-primary",
               )}
             >
               {item.text}

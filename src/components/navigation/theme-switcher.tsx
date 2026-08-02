@@ -42,10 +42,10 @@ export function ThemeSwitcher() {
               "inline-flex size-8 items-center justify-center rounded-sm transition-colors",
               selected
                 ? "bg-surface-sunken text-text-primary"
-                : "text-text-muted hover:text-text-primary",
+                : "text-text-secondary hover:text-text-primary",
             )}
           >
-            <Icon className="size-4" aria-hidden />
+            <Icon className="size-icon-xs" aria-hidden />
             <span className="sr-only">{label}</span>
           </button>
         );

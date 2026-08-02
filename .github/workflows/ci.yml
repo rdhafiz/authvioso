@@ -1,0 +1,84 @@
+# Orchestrator. Every check is its own reusable workflow so that adding one is
+# a new file plus a job block here — nothing else moves.
+#
+# The checks that block a merge are listed in docs/branch-protection.md, which
+# is the settings side of this file. A check added here does not become
+# required until it is added there too, which is deliberate: a new check runs
+# in advisory mode until it has proved it does not flap.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A second push to the same branch cancels the first. The exception is main,
+# where every commit gets a real run because that is what "always releasable"
+# is checked against.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # --- Correctness gates -----------------------------------------------
+  # These fail the build. Ordered cheapest-first so a broken PR reports in
+  # seconds rather than after a full install.
+
+  secret-scan:
+    name: Secret scan
+    uses: ./.github/workflows/check-secret-scan.yml
+
+  markdown-lint:
+    name: Markdown lint
+    uses: ./.github/workflows/check-markdown-lint.yml
+
+  spell-check:
+    name: Spell check
+    uses: ./.github/workflows/check-spell.yml
+
+  eslint:
+    name: ESLint
+    uses: ./.github/workflows/check-eslint.yml
+
+  typecheck:
+    name: Type check
+    uses: ./.github/workflows/check-typecheck.yml
+
+  build:
+    name: Build
+    uses: ./.github/workflows/check-build.yml
+
+  # Link validation runs against the built output, so it waits for the build.
+  link-validation:
+    name: Link validation
+    needs: build
+    uses: ./.github/workflows/check-links.yml
+
+  # --- Summary ----------------------------------------------------------
+  # One job to require in branch protection, so adding a check does not mean
+  # editing the protection rules every time.
+  ci:
+    name: CI
+    if: always()
+    needs:
+      - secret-scan
+      - markdown-lint
+      - spell-check
+      - eslint
+      - typecheck
+      - build
+      - link-validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any check failed
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "One or more checks failed. See the jobs above."
+          exit 1
+      - name: All checks passed
+        run: echo "All checks passed."

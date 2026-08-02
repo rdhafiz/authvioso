@@ -1,0 +1,9 @@
+{
+  // These files are GitHub issue bodies, not documents. The issue title is the
+  // heading, so opening one with an `# H1` would render the same words twice.
+  // MD041 is correct everywhere else in the repository and stays on there.
+  "config": {
+    "extends": "../../.markdownlint-cli2.jsonc",
+    "MD041": false,
+  },
+}

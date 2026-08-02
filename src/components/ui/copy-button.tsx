@@ -38,14 +38,14 @@ export function CopyButton({ getText, className }: CopyButtonProps) {
       // get the confirmation too.
       aria-label={copied ? "Copied" : "Copy code"}
       className={cn(
-        "text-text-muted hover:text-text-primary hover:bg-surface-sunken inline-flex size-8 items-center justify-center rounded-md transition-colors",
+        "text-text-secondary hover:text-text-primary hover:bg-surface-sunken inline-flex size-8 items-center justify-center rounded-md transition-colors",
         className,
       )}
     >
       {copied ? (
-        <Check className="size-4" aria-hidden />
+        <Check className="size-icon-xs" aria-hidden />
       ) : (
-        <Copy className="size-4" aria-hidden />
+        <Copy className="size-icon-xs" aria-hidden />
       )}
     </button>
   );

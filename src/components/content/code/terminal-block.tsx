@@ -29,7 +29,7 @@ export function TerminalBlock({
 
   return (
     <figure className="group border-border-subtle bg-surface-sunken relative my-6 overflow-hidden rounded-md border">
-      <figcaption className="border-border-subtle text-text-muted flex items-center justify-between border-b px-4 py-2 font-mono text-xs">
+      <figcaption className="border-border-subtle text-text-secondary flex items-center justify-between border-b px-4 py-2 font-mono text-xs">
         <span>{title}</span>
       </figcaption>
 
@@ -40,12 +40,12 @@ export function TerminalBlock({
       <pre className="overflow-x-auto p-4 font-mono text-sm">
         {commands.map((command) => (
           <div key={command}>
-            <span className="text-text-muted select-none">$ </span>
+            <span className="text-text-secondary select-none">$ </span>
             <span>{command}</span>
           </div>
         ))}
         {output?.map((line) => (
-          <div key={line} className="text-text-muted">
+          <div key={line} className="text-text-secondary">
             {line}
           </div>
         ))}

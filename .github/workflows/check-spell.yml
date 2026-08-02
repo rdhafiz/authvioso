@@ -1,0 +1,27 @@
+# Spell check. A security curriculum that misspells "authentication" has a
+# credibility problem before anyone reads a word of the content.
+#
+# The project dictionary in cspell.json is deliberately explicit: adding a
+# word is a small decision that gets reviewed, which is what stops the
+# dictionary becoming a place where typos go to be legitimised.
+
+name: Spell check
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  cspell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint:spell

@@ -87,7 +87,7 @@ export function ApiRequest({
       ) : null}
 
       {note ? (
-        <p className="border-border-subtle text-text-muted border-t px-4 py-2 text-sm">
+        <p className="border-border-subtle text-text-secondary border-t px-4 py-2 text-sm">
           {note}
         </p>
       ) : null}
@@ -139,7 +139,7 @@ export function ApiResponse({
       ) : null}
 
       {note ? (
-        <p className="border-border-subtle text-text-muted border-t px-4 py-2 text-sm">
+        <p className="border-border-subtle text-text-secondary border-t px-4 py-2 text-sm">
           {note}
         </p>
       ) : null}

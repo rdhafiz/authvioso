@@ -49,7 +49,7 @@ export function Timeline({
         ))}
       </ol>
       {caption ? (
-        <figcaption className="text-text-muted mt-3 text-sm">
+        <figcaption className="text-text-secondary mt-3 text-sm">
           {caption}
         </figcaption>
       ) : null}

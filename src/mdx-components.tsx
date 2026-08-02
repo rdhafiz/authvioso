@@ -61,22 +61,23 @@ const components: MDXComponents = {
   // rehype-autolink-headings wraps heading text in an anchor, so the styling
   // for those lives on .heading-anchor in globals.css rather than here.
   h1: (props: ComponentPropsWithoutRef<"h1">) => (
-    <h1 className="mt-12 mb-6 text-2xl font-bold" {...props} />
+    <h1 className="text-h1 mt-12 mb-6" {...props} />
   ),
   h2: (props: ComponentPropsWithoutRef<"h2">) => (
-    // More space above than below — that gap is what visually binds a heading
-    // to the text underneath it.
-    <h2 className="mt-12 mb-4 text-xl font-semibold" {...props} />
+    // text-h2 carries size, weight, line height and tracking together, so the
+    // only thing set here is the spacing. More above than below: that gap is
+    // what visually binds a heading to the text underneath it.
+    <h2 className="text-h2 mt-12 mb-4" {...props} />
   ),
   h3: (props: ComponentPropsWithoutRef<"h3">) => (
-    <h3 className="mt-8 mb-3 text-lg font-semibold" {...props} />
+    <h3 className="text-h3 mt-8 mb-3" {...props} />
   ),
   h4: (props: ComponentPropsWithoutRef<"h4">) => (
-    <h4 className="text-md mt-6 mb-2 font-semibold" {...props} />
+    <h4 className="text-h4 mt-6 mb-2" {...props} />
   ),
 
   p: (props: ComponentPropsWithoutRef<"p">) => (
-    <p className="mb-4" {...props} />
+    <p className="text-body mb-4" {...props} />
   ),
 
   ul: (props: ComponentPropsWithoutRef<"ul">) => (

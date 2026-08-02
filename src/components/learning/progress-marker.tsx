@@ -32,9 +32,9 @@ export function ProgressMarker({ chapterId }: { chapterId: ChapterId }) {
       )}
     >
       {read ? (
-        <Check className="size-4" aria-hidden />
+        <Check className="size-icon-xs" aria-hidden />
       ) : (
-        <Circle className="size-4" aria-hidden />
+        <Circle className="size-icon-xs" aria-hidden />
       )}
       {read ? "Read" : "Mark as read"}
     </button>

@@ -43,7 +43,7 @@ export function DecisionTree({
   return (
     <figure className="my-8">
       {assumptions ? (
-        <p className="text-text-muted mb-4 text-sm">
+        <p className="text-text-secondary mb-4 text-sm">
           <span className="font-semibold">Assumes: </span>
           {assumptions}
         </p>
@@ -52,7 +52,7 @@ export function DecisionTree({
       <Branch node={root} depth={0} />
 
       {caption ? (
-        <figcaption className="text-text-muted mt-3 text-sm">
+        <figcaption className="text-text-secondary mt-3 text-sm">
           {caption}
         </figcaption>
       ) : null}
@@ -72,7 +72,7 @@ function Branch({ node, depth }: { node: DecisionNode; depth: number }) {
         {node.branches.map((branch) => (
           <li key={branch.answer}>
             <p className="text-text-secondary text-sm">
-              <span className="text-text-muted">→ </span>
+              <span className="text-text-secondary">→ </span>
               {branch.answer}
             </p>
             <div className="mt-2">

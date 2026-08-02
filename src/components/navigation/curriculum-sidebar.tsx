@@ -61,7 +61,7 @@ export function CurriculumSidebar() {
                           "-ml-3 block border-l-2 py-1 pl-3 no-underline transition-colors",
                           isCurrent
                             ? "border-text-link text-text-primary font-medium"
-                            : "text-text-muted hover:text-text-primary border-transparent",
+                            : "text-text-secondary hover:text-text-primary border-transparent",
                         )}
                       >
                         {chapter.title}

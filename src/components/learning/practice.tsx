@@ -29,7 +29,7 @@ export function BestPractice({
   return (
     <div className="border-status-success/40 bg-status-success-surface my-6 rounded-md border p-4">
       <p className="text-status-success mb-2 flex items-center gap-2 text-sm font-semibold">
-        <CircleCheck className="size-4 shrink-0" aria-hidden />
+        <CircleCheck className="size-icon-xs shrink-0" aria-hidden />
         Best practice
       </p>
       <div className="mb-3 font-medium [&>*:last-child]:mb-0">{children}</div>
@@ -65,7 +65,7 @@ export function CommonMistake({
   return (
     <div className="border-status-danger/40 bg-status-danger-surface my-6 rounded-md border p-4">
       <p className="text-status-danger mb-2 flex items-center gap-2 text-sm font-semibold">
-        <CircleX className="size-4 shrink-0" aria-hidden />
+        <CircleX className="size-icon-xs shrink-0" aria-hidden />
         Common mistake
       </p>
 

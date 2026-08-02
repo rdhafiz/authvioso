@@ -1,0 +1,33 @@
+# Link validation config.
+#
+# External links are checked but do not fail the build on a transient network
+# error — a flaky check gets ignored, and an ignored check is worse than none.
+# Internal links always fail, because those are ours and we control them.
+
+# Fail on internal 404s. External failures surface as warnings unless they are
+# a genuine 404.
+accept = [200, 204, 206, 301, 302, 307, 308]
+
+# Some sites refuse HEAD or block CI ranges. Retrying with GET catches most.
+method = "get"
+max_retries = 2
+timeout = 20
+max_concurrency = 8
+
+# Never check these.
+exclude = [
+  # Placeholder domain until the production domain is decided (D-0012).
+  "^https?://authvioso\.dev",
+  # Localhost examples in documentation.
+  "^https?://localhost",
+  "^https?://127\.0\.0\.1",
+  # Template placeholders.
+  "\u2039.*\u203a",
+]
+
+exclude_all_private = true
+exclude_mail = true
+
+# Anchors in built HTML are generated from headings; verifying them catches a
+# cross-reference pointing at a section that was renamed.
+include_fragments = true
