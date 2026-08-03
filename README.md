@@ -96,17 +96,21 @@ else is server-rendered, and all reading works without JavaScript.
 ```text
 authvioso/
 ├── content/
+│   ├── _template/chapter.mdx    the master chapter template
 │   ├── en/chapters/*.mdx        curriculum text
 │   ├── bn/                      same structure, same filenames
 │   └── graph/                   nodes, relationships, topics
 │
 ├── src/
 │   ├── app/
-│   │   ├── (site)/              everything with header + footer
+│   │   ├── (site)/              English, at the root
 │   │   │   ├── learn/
 │   │   │   │   ├── layout.tsx   sidebar shell
 │   │   │   │   └── [part]/[chapter]/
 │   │   │   └── …                about, faq, glossary, search, …
+│   │   ├── bn/                  Bangla, same paths under /bn (D-0015)
+│   │   │   ├── layout.tsx       sets lang + dir
+│   │   │   └── learn/[part]/[chapter]/
 │   │   ├── layout.tsx           fonts, theme, skip link
 │   │   ├── globals.css
 │   │   ├── sitemap.ts · robots.ts · manifest.ts
@@ -118,18 +122,22 @@ authvioso/
 │   │   │                        pagination, empty-state, skeleton
 │   │   ├── navigation/          header, footer, sidebar, breadcrumbs,
 │   │   │                        toc, theme + search + mobile nav
-│   │   ├── content/             json-ld
-│   │   ├── learning/            chapter components (Sprint 2)
-│   │   ├── quiz/ certificate/   later sprints
+│   │   ├── content/             json-ld, code, diagrams
+│   │   ├── learning/            definition, notes, practice, summary,
+│   │   │                        chapter header/layout/meta
+│   │   ├── pages/               page bodies shared by both editions
+│   │   ├── quiz/                the six question types + marking UI
+│   │   ├── certificate/         later sprint
 │   │   └── providers/
 │   │
 │   ├── config/                  site · i18n · navigation
 │   ├── hooks/                   use-hydrated
 │   ├── lib/
 │   │   ├── content/             curriculum · queries · mdx · paths
-│   │   ├── graph/               knowledge graph (types + rules)
-│   │   ├── progress/            reading progress
-│   │   ├── search/              types + design notes
+│   │   ├── graph/               load · query · paths · validate
+│   │   ├── progress/            state shape + local store
+│   │   ├── quiz/                marking. Pure, no React
+│   │   ├── search/              types · engine seam · index builder
 │   │   └── seo/                 metadata · structured-data
 │   ├── styles/tokens.css
 │   ├── types/content.ts
@@ -320,6 +328,104 @@ so options have to be serialisable too.
 
 ---
 
+## How to add a knowledge node
+
+A node is one teachable concept — the smallest idea that can be explained,
+related to other ideas, and tested on its own. Nodes are not pages: they live
+inside chapters and are linked to by anchor.
+
+Add an object to `content/graph/nodes.json`:
+
+```json
+{
+  "id": "K-0182",
+  "slug": "session-identifier",
+  "title": "Session identifier",
+  "type": "definition",
+  "statement": "An opaque value the server issues to name one authenticated session.",
+  "chapter": "C17",
+  "anchor": "the-identifier",
+  "parent": "T-04",
+  "difficulty": "beginner",
+  "requires": ["K-0110"],
+  "status": "draft",
+  "version": "1.0",
+  "reviewed": "2026-01-01"
+}
+```
+
+Rules that the validator enforces, so you will find out either way:
+
+- **`id` is permanent and never reused**, including after a node is retired.
+  It appears in questions, examples and external links.
+- **Exactly one parent topic, exactly one chapter.** A node that seems to need
+  two is two nodes, or the hierarchy is wrong.
+- **`statement` is one sentence.** It is the single most load-bearing field —
+  what search returns, what a hover preview shows, and what gets quoted back at
+  someone who answers a question wrong. If it will not fit in one sentence, the
+  node is too large.
+- **Nothing is easier than what it requires.** Difficulty is checked against
+  every prerequisite.
+- **Nothing Locked may require a Draft.**
+- **A `threat` needs at least one node that `defends` against it**, and every
+  `defense` must state its `limits`. A mitigation presented as total is worse
+  than one described as absent.
+- **`contrasts_with` is symmetric** and recorded on both nodes.
+- **No cycles.** A cycle means there is no valid order to teach the material in.
+
+Validation runs through `loadValidGraph()`, which every consumer goes through.
+It throws in production, so a bad graph fails the build; in development it
+warns and carries on, because a half-authored graph should still render a dev
+server.
+
+---
+
+## How to add a quiz
+
+Questions live in the bank, not inline in the chapter. A chapter renders its
+check with:
+
+```mdx
+<Quiz questions={questions} />
+```
+
+Six question types are permitted and the set is closed (`QZ-003` §0). They are
+a discriminated union in `src/types/quiz.ts`, so a seventh will not compile
+until it is specified first.
+
+| Type              | Use for                                                           |
+| ----------------- | ----------------------------------------------------------------- |
+| `single-choice`   | The default, at every level                                       |
+| `multiple-choice` | Completeness — the number correct is never stated                 |
+| `paired-claim`    | A claim plus its justification. Plain true/false is not permitted |
+| `sequence`        | Flows and protocol steps                                          |
+| `matching`        | Mechanisms to threats, defences to attacks                        |
+| `scenario`        | Advanced and Expert judgment                                      |
+
+Every question maps to exactly one node and one objective. That is what makes a
+wrong answer able to link to the specific concept rather than to three thousand
+words of chapter.
+
+What the component deliberately does not do, and why it matters if you are
+extending it:
+
+- **No timer.** Timing measures how recently you read something.
+- **Nothing auto-advances or auto-submits.** Answers stay changeable until
+  submit, and submit is a deliberate act.
+- **Explanations appear after the whole attempt**, never per question.
+  Per-question feedback turns the second half into a different assessment.
+- **No score.** Results are objectives met and unmet.
+- **No partial credit.** Three of four required defences is an incomplete
+  model, not 75%.
+- **Correct and incorrect are marked with an icon and a word**, never colour
+  alone.
+
+Marking lives in `src/lib/quiz/evaluate.ts` and is pure — no React, no storage.
+It is the part that must not be wrong, because a marking bug tells a reader
+they do not understand something they do.
+
+---
+
 ## Development workflow
 
 1. Branch off `main` — one concern per branch.
@@ -336,10 +442,9 @@ Formatting is automated and never discussed in review.
 
 | Gap                      | Effect                                                                                                        |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| **Licence undecided**    | No `LICENSE` file. Blocks going public                                                                        |
 | **Domain undecided**     | `NEXT_PUBLIC_SITE_URL` points at localhost. Appears on printed certificates, so it can't stay a placeholder   |
 | **No logo**              | No favicon, no manifest icons. Declaring files that don't exist would just 404                                |
-| **Bangla routing**       | URL shape is decided (`/bn/…`); the App Router mechanism isn't. English only for now                          |
+| **Bangla `<html lang>`** | `/bn` sets `lang` on a wrapper, not on `<html>`. Satisfies WCAG 3.1.2, not 3.1.1. Tracked as `IMP-008`        |
 | **No CSP**               | Needs writing against the real asset graph. A permissive placeholder reads as protection without being any    |
 | **Search unimplemented** | Types and design notes only. Needs content before an index is worth building                                  |
 | **Fixture chapter**      | `content/en/chapters/http-requests-and-responses.mdx` is a pipeline test, not C01. Delete when C01 is written |
@@ -348,9 +453,16 @@ Formatting is automated and never discussed in review.
 
 ## Specs
 
-`authvioso_meta/v1.0/` holds 146 documents across 14 folders covering the
-vision, curriculum, knowledge graph, content standards, design system, quiz
-and certificate systems, workflow and roadmap.
+`authvioso_meta/v1.0/` holds the specification: vision, curriculum, knowledge
+graph, content standards, design system, quiz and certificate systems, workflow
+and roadmap.
 
-All of them are currently **Draft** — nothing is Locked, so anything built
-against them is provisional by definition.
+It was frozen as **v1.0.0-spec** — see `FREEZE.md`. Nearly everything is
+**Locked**, which is what makes it safe to build against. Two documents are
+deliberately Living and are appended to rather than frozen: `RDM-011`
+(implementation tracking) and `RDM-012` (deferred features).
+
+Decisions taken while building are recorded in `00_Project/DECISION_LOG.md`,
+and the architectural ones get an ADR in `00_Project/adr/`. If the code and the
+specification disagree, one of them is wrong and it is not automatically the
+specification.

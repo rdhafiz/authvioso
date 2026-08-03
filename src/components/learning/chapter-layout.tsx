@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { Route } from "next";
 
+import type { Locale } from "@/config/i18n";
+
 import { ChapterHeader } from "./chapter-header";
 import {
   LearningObjectives,
@@ -39,6 +41,7 @@ export function ChapterLayout({
   next,
   position,
   tags,
+  locale,
   children,
 }: {
   chapter: {
@@ -58,6 +61,8 @@ export function ChapterLayout({
   next?: PaginationLink | null;
   position: { index: number; total: number };
   tags?: string[];
+  /** Which edition this is rendering. Every internal link needs it. */
+  locale: Locale;
   children: ReactNode;
 }) {
   return (
@@ -80,12 +85,12 @@ export function ChapterLayout({
           />
 
           {objectives ? <LearningObjectives items={objectives} /> : null}
-          <Prerequisites items={prerequisites} />
+          <Prerequisites items={prerequisites} locale={locale} />
 
           {/* The chapter body. Everything above and below is chrome. */}
           <div className="container-prose max-w-none">{children}</div>
 
-          <RelatedTopics items={related} />
+          <RelatedTopics items={related} locale={locale} />
           <Pagination previous={previous} next={next} />
         </article>
 

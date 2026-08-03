@@ -1,0 +1,142 @@
+---
+# Every field here is required and validated at build by
+# src/lib/content/schema.ts. A chapter that fails validation does not render.
+#
+# Copy this file to content/en/chapters/<slug>.mdx and replace everything.
+# The structure below is CST-002; the sections are in the order a reader
+# meets them, and that order is not a preference.
+
+id: C00
+title: The chapter title, naming the concept rather than the lesson
+part: P0
+level: foundation # foundation | beginner | intermediate | advanced | expert
+readingTime: 12 # minutes, from word count and asset weight, not eyeballed
+
+# One or two sentences for search results and link previews. Written for
+# someone deciding whether to open it.
+description: >-
+  What this chapter answers, in the words a reader would use to ask it.
+
+# What the reader can do afterwards, as an observable action. One per chapter;
+# two means it should have been two chapters. "Understand sessions" is not
+# checkable and does not belong here.
+objective: >-
+  Compare X and Y and name what each gives up.
+
+# The specific things covered, shown at the top. Three to six.
+objectives:
+  - First specific capability
+  - Second specific capability
+  - Third specific capability
+
+# Concepts taught here. Every one is a node in content/graph/nodes.json, and
+# every node belongs to exactly one chapter.
+nodes: []
+
+# Direct prerequisites only — the full chain is derived. Chapters, not nodes.
+requires: []
+recommends: []
+related: []
+
+# Closed vocabularies, in src/types/content.ts. A typo is a build error rather
+# than a chapter that silently drops out of every filter.
+methods: []
+threats: []
+standards: []
+
+status: draft # draft | under-review | locked | deprecated | retired
+version: "1.0"
+reviewed: 2026-01-01 # when a human last checked this was true
+owner: Ridwanul Hafiz
+editions: [en]
+---
+
+{/* THE MASTER CHAPTER TEMPLATE — structure only. */}
+
+{/* Section order follows CST-002 and is deliberate: the reader is told what
+they will be able to do, what they need first, and what the words mean, before
+any explanation starts. Security notes come after the mechanism is understood,
+because a warning about something you cannot yet picture is noise. */}
+
+{/* Delete the guidance comments as you write. Do not delete the sections — a
+chapter missing its security notes or its summary fails review (CST-010). */}
+
+{/* Every component below is available without an import. The full set is in
+src/mdx-components.tsx. */}
+
+## What you will be able to do
+
+{/* The objectives above, in prose. One short paragraph, not a restatement. */}
+
+## Before you start
+
+{/* Prerequisites in the reader's terms, each linking to its chapter. Say what
+they need to already know, not which chapter numbers precede this one. */}
+
+## Definitions
+
+<Definition term="Term">
+  One sentence. The same wording as the glossary entry, because a reader who
+  meets both should not have to reconcile them.
+</Definition>
+
+## How it works
+
+{/* The explanation. Build from what the reader already has to what is new.
+One idea at a time; if a paragraph needs "and also", it is two paragraphs.
+Diagrams go where the text stops being enough, not at the end. */}
+
+<Figure alt="A complete description of what the diagram shows, for anyone who cannot see it. Not a caption — someone reading this instead of the image should learn the same thing.">
+  <FlowDiagram>{/* diagram source */}</FlowDiagram>
+</Figure>
+
+## In practice
+
+{/* Runnable code lives in authvioso_examples and is linked, never inlined
+wholesale. What appears here is the fragment that carries the idea. */}
+
+```ts
+// The smallest code that shows the mechanism.
+```
+
+## Security notes
+
+<SecurityNote>
+  What goes wrong, under what conditions, and what prevents it. A defence
+  stated without its limits is worse than none stated at all (SEC-7).
+</SecurityNote>
+
+## Best practices
+
+<BestPractice reason="Why this is right, in terms of what it prevents.">
+  The practice, stated as an action.
+</BestPractice>
+
+## Common mistakes
+
+<CommonMistake tempting="Why a reasonable person does this.">
+  The mistake, and what to do instead.
+</CommonMistake>
+
+## Summary
+
+<Summary>
+  - The first thing that must survive if everything else is forgotten
+  - The second
+  - The third
+</Summary>
+
+## Check your understanding
+
+{/* Questions live in the question bank, not inline. No timer, nothing
+auto-advances, and explanations appear only after the whole attempt is
+submitted — see components/quiz/quiz.tsx. */}
+
+<Quiz questions={[]} />
+
+## Further reading
+
+<FurtherReading>
+  {/* Specifications first, then material that explains them. Every entry says
+  why it is worth reading, not just what it is. */}
+</FurtherReading>

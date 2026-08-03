@@ -29,6 +29,7 @@ import {
   Warning,
 } from "@/components/learning/notes";
 import { BestPractice, CommonMistake } from "@/components/learning/practice";
+import { Quiz } from "@/components/quiz/quiz";
 import { Summary } from "@/components/learning/summary";
 import { Callout } from "@/components/ui/callout";
 import { CodeBlock } from "@/components/ui/code-block";
@@ -159,6 +160,10 @@ const components: MDXComponents = {
   ComparisonTable,
   Timeline,
   DecisionTree,
+
+  // The chapter check. Client component; everything above it is server
+  // rendered, so a chapter without one ships no quiz JavaScript at all.
+  Quiz,
 
   // Code and HTTP.
   TerminalBlock,

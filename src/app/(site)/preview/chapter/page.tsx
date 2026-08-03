@@ -39,6 +39,7 @@ export default async function ChapterPreviewPage() {
 
   return (
     <ChapterLayout
+      locale="en"
       chapter={{
         id: "C00",
         title: "The Lifecycle of a Library Loan",

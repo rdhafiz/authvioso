@@ -13,10 +13,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { part } = await params;
-  return buildPartMetadata(part, "en");
+  return buildPartMetadata(part, "bn");
 }
 
 export default async function Page({ params }: Props) {
   const { part } = await params;
-  return <PartPage slug={part} locale="en" />;
+  return <PartPage slug={part} locale="bn" />;
 }

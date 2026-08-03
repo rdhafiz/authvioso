@@ -63,6 +63,70 @@ export interface KnowledgeNode {
   version: string;
   /** When a human last checked this was still true. Not a file timestamp. */
   reviewed: string;
+
+  // --- Optional, per KG-002 §4 ---------------------------------------------
+  // Absence is meaningful. A node with no `defends` isn't a node whose
+  // defences we haven't got round to listing; it's a node that defends
+  // nothing. Never fill these with a placeholder to make a shape uniform.
+
+  /** Concepts this one adds capability to. */
+  extends?: NodeId[];
+  /** Different answers to the same problem. Symmetric — recorded on both. */
+  contrastsWith?: NodeId[];
+  /** For threat nodes: what the attack targets. */
+  threatens?: NodeId[];
+  /** For defense nodes: which threats this mitigates. */
+  defends?: NodeId[];
+  /** What becomes possible once this is understood. */
+  enables?: NodeId[];
+
+  /**
+   * What this defence does *not* cover.
+   *
+   * Required on every defense node and checked at build. A mitigation
+   * presented as total is worse than one described as absent, because the
+   * reader stops looking (`SEC-7`).
+   */
+  limits?: string;
+
+  glossaryTerms?: string[];
+  standards?: StandardTag[];
+  threatTags?: ThreatTag[];
+  methodTags?: MethodTag[];
+  tags?: string[];
+
+  /** The runnable example demonstrating it. */
+  example?: string;
+  /** The learning objective it serves. */
+  objective?: string;
+  /** The node this supersedes, and what replaced it. */
+  deprecates?: NodeId;
+  deprecatedBy?: NodeId;
+  /** Which language editions carry it. */
+  editions?: Locale[];
+  /** Authoring context. Never rendered. */
+  notes?: string;
+}
+
+/**
+ * A container in the hierarchy: root, topic, or subtopic.
+ *
+ * Topics carry no teaching content — that lives in nodes. A topic exists to
+ * group and to order, which is why it has `children` and no `statement`.
+ */
+export interface Topic {
+  id: TopicId;
+  slug: string;
+  title: string;
+  /** Exactly one, except for roots. */
+  parent?: TopicId;
+  /**
+   * Authored order, never alphabetical. Where children have no dependency
+   * between them the sequence is a teaching choice, and it gets recorded
+   * rather than left to whatever the JSON happened to list first
+   * (`KG-004` §2).
+   */
+  children: (TopicId | NodeId)[];
 }
 
 export type RelationshipType =

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { defaultLocale, localeConfig, locales } from "@/config/i18n";
 import { noIndexRoutes } from "@/config/navigation";
+import { existsInEdition } from "@/lib/content/edition";
 import { siteConfig } from "@/config/site";
 
 // Chapter, glossary and path URLs get appended to this once the content graph
@@ -41,6 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       const languages: Record<string, string> = {};
       for (const locale of locales) {
+        if (!existsInEdition(route, locale)) continue;
         languages[localeConfig[locale].htmlLang] =
           `${origin}${localeConfig[locale].pathPrefix}${path}` || origin;
       }

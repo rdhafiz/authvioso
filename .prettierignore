@@ -4,3 +4,15 @@ pnpm-lock.yaml
 next-env.d.ts
 .next/types
 public
+
+# MDX content.
+#
+# Prettier's MDX parser predates MDX v3 and rewrites its expression syntax:
+# `{/* comment */}` comes back as `{/\* comment \*/}`, and JSX children get
+# reflowed as markdown, which collapses lists inside components. Both produce
+# files that no longer compile.
+#
+# Chapters are prose with components in them. There is nothing here Prettier
+# was built to normalise, and the cost of it being wrong is a broken build in
+# a file someone spent a week writing.
+content/**/*.mdx

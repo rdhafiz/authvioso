@@ -4,6 +4,15 @@ import { useCallback, useSyncExternalStore } from "react";
 
 import type { ChapterId } from "@/types/content";
 
+import {
+  EMPTY_PROGRESS,
+  migrate,
+  serialise,
+  withAttempt,
+  type AttemptRecord,
+  type ProgressState,
+} from "./state";
+
 /**
  * Reading progress, stored locally.
  *
@@ -19,18 +28,16 @@ import type { ChapterId } from "@/types/content";
  * localStorage *is* external state: it's shared across every component that
  * reads it and across tabs. useSyncExternalStore handles both, and the
  * storage event gives cross-tab sync for nothing.
+ *
+ * The shape lives in state.ts, along with the reasoning about which fields
+ * exist. This file is only the plumbing.
  */
 
 const STORAGE_KEY = "authvioso-progress";
 
-interface ProgressState {
-  version: 1;
-  read: ChapterId[];
-}
-
 // Stable reference. Returning a fresh object from getSnapshot would re-render
 // forever, and this is also what the server sees.
-const EMPTY: ProgressState = { version: 1, read: [] };
+const EMPTY = EMPTY_PROGRESS;
 
 const listeners = new Set<() => void>();
 let cache: ProgressState | null = null;
@@ -39,11 +46,9 @@ function read(): ProgressState {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as ProgressState;
     // Half-written value, someone else's data, or a schema we don't know.
-    // Fall back rather than throwing on every render.
-    if (parsed?.version !== 1 || !Array.isArray(parsed.read)) return EMPTY;
-    return parsed;
+    // migrate() salvages what it can and returns null when it can't.
+    return migrate(JSON.parse(raw)) ?? EMPTY;
   } catch {
     return EMPTY;
   }
@@ -104,6 +109,29 @@ export function useReadingProgress() {
     });
   }, []);
 
+  /** Where "continue reading" should go. Set on chapter view, not on scroll. */
+  const setLastChapter = useCallback((id: ChapterId) => {
+    const current = getSnapshot();
+    if (current.lastChapter === id) return;
+    write({ ...current, lastChapter: id });
+  }, []);
+
+  /**
+   * Records a completed attempt.
+   *
+   * Appends rather than replaces. `QZ-009` keeps every attempt because a
+   * second attempt that goes better is the thing worth seeing, and overwriting
+   * the first one deletes the evidence of it.
+   */
+  const recordAttempt = useCallback((attempt: AttemptRecord) => {
+    write(withAttempt(getSnapshot(), attempt));
+  }, []);
+
+  const hasMet = useCallback(
+    (objective: string) => state.objectivesMet.includes(objective),
+    [state.objectivesMet],
+  );
+
   /** Wipes everything. One action, no confirmation theatre. */
   const clear = useCallback(() => {
     cache = EMPTY;
@@ -116,16 +144,34 @@ export function useReadingProgress() {
   }, []);
 
   /** The account-free way to move between devices. */
-  const exportProgress = useCallback(
-    () => JSON.stringify(state, null, 2),
-    [state],
-  );
+  const exportProgress = useCallback(() => serialise(state), [state]);
+
+  /**
+   * Restores from an exported file.
+   *
+   * Replaces rather than merges. Merging two histories requires deciding what
+   * happens when they disagree, and every rule for that is a guess about which
+   * device the reader considers authoritative. Replacing is predictable, and
+   * the reader can export first if they want the other copy.
+   *
+   * Returns false on a file it cannot read, leaving existing progress intact.
+   */
+  const importProgress = useCallback((next: ProgressState | null) => {
+    if (!next) return false;
+    write(next);
+    return true;
+  }, []);
 
   return {
+    state,
     readCount: state.read.length,
     isRead,
     toggle,
+    setLastChapter,
+    recordAttempt,
+    hasMet,
     clear,
     exportProgress,
+    importProgress,
   };
 }

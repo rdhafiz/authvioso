@@ -42,7 +42,6 @@
   /* Our roles, exposed as utilities: text-text-link, bg-surface-raised, etc. */
   --color-text-primary: var(--av-text-primary);
   --color-text-secondary: var(--av-text-secondary);
-  --color-text-secondary: var(--av-text-secondary);
   --color-text-inverse: var(--av-text-inverse);
   --color-text-link: var(--av-text-link);
   --color-text-accent: var(--av-text-accent);

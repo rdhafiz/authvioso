@@ -143,19 +143,25 @@ function slugifyHeading(text: string): string {
  * too. Add a branch per locale when Bangla routing lands.
  */
 export async function loadChapterContent(slug: string, locale: Locale = "en") {
-  if (locale !== "en") return null;
-
   // Check the file exists before importing rather than letting the import
   // throw. Exceptions as control flow is bad enough on its own, and it also
   // means an unwritten chapter doesn't produce a stack trace on every render.
   //
-  // Note: while content/en/chapters is empty, Turbopack logs a "can't resolve
+  // Note: while a chapters directory is empty, Turbopack logs a "can't resolve
   // <dynamic>.mdx" warning at build. It's harmless — there's no module map to
   // build yet — and it goes away as soon as the first chapter is written.
   if (!(await chapterExists(slug, locale))) return null;
 
   try {
-    const mod = await import(`@/content/en/chapters/${slug}.mdx`);
+    // One branch per locale, with the directory spelled out literally. The
+    // bundler builds a module map from the static part of the path, so
+    // interpolating the locale as well would leave it with nothing to scan
+    // and every import would fail to resolve. A switch is the cost of that.
+    const mod =
+      locale === "bn"
+        ? await import(`@/content/bn/chapters/${slug}.mdx`)
+        : await import(`@/content/en/chapters/${slug}.mdx`);
+
     return {
       Content: mod.default as React.ComponentType,
       frontmatter: (mod.metadata ?? {}) as Record<string, unknown>,

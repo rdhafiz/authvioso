@@ -1,8 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import type { Route } from "next";
 
+import type { Locale } from "@/config/i18n";
 import type { ChapterMeta } from "@/lib/content/curriculum";
+import { localeHref } from "@/lib/content/locale-href";
 import { getChapterHref } from "@/lib/content/queries";
 
 /**
@@ -48,7 +49,13 @@ export function LearningObjectives({ items }: { items: string[] }) {
  * and rendering twenty entries produces a wall that gets skipped — which
  * defeats the purpose, because the two that mattered are in there somewhere.
  */
-export function Prerequisites({ items }: { items: ChapterMeta[] }) {
+export function Prerequisites({
+  items,
+  locale,
+}: {
+  items: ChapterMeta[];
+  locale: Locale;
+}) {
   if (items.length === 0) return null;
 
   return (
@@ -62,7 +69,9 @@ export function Prerequisites({ items }: { items: ChapterMeta[] }) {
       <ul className="flex flex-col gap-1 text-sm">
         {items.map((chapter) => (
           <li key={chapter.id}>
-            <Link href={getChapterHref(chapter)}>{chapter.title}</Link>
+            <Link href={localeHref(getChapterHref(chapter), locale)}>
+              {chapter.title}
+            </Link>
           </li>
         ))}
       </ul>
@@ -79,7 +88,13 @@ export function Prerequisites({ items }: { items: ChapterMeta[] }) {
  * useful relationships are the non-hierarchical ones: what this competes
  * with, what attacks it, what defends it.
  */
-export function RelatedTopics({ items }: { items: ChapterMeta[] }) {
+export function RelatedTopics({
+  items,
+  locale,
+}: {
+  items: ChapterMeta[];
+  locale: Locale;
+}) {
   if (items.length === 0) return null;
 
   return (
@@ -91,7 +106,7 @@ export function RelatedTopics({ items }: { items: ChapterMeta[] }) {
         {items.map((chapter) => (
           <li key={chapter.id}>
             <Link
-              href={getChapterHref(chapter) as Route}
+              href={localeHref(getChapterHref(chapter), locale)}
               className="border-border-subtle hover:border-border-strong block rounded-md border p-3 text-sm no-underline"
             >
               <span className="text-text-primary font-medium">

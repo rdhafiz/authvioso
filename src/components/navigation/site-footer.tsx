@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import type { Locale } from "@/config/i18n";
 import { footerNav } from "@/config/navigation";
+import { editionHref } from "@/lib/content/edition";
 import { siteConfig } from "@/config/site";
 
 /**
@@ -10,7 +12,7 @@ import { siteConfig } from "@/config/site";
  * version, and the licence once we have one. No newsletter box, no social
  * row, no cookie banner (there's nothing to consent to).
  */
-export function SiteFooter() {
+export function SiteFooter({ locale = "en" }: { locale?: Locale } = {}) {
   return (
     <footer className="border-border-subtle bg-surface-page mt-24 border-t">
       <div className="container-page px-4 py-12">
@@ -24,7 +26,7 @@ export function SiteFooter() {
                 {group.items.map((item) => (
                   <li key={item.href}>
                     <Link
-                      href={item.href}
+                      href={editionHref(item.href, locale)}
                       className="text-text-secondary hover:text-text-primary text-sm no-underline"
                     >
                       {item.label}

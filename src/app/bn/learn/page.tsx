@@ -5,8 +5,8 @@ import {
   LearnIndexPage,
 } from "@/components/pages/learn-index-page";
 
-export const metadata: Metadata = buildLearnIndexMetadata("en");
+export const metadata: Metadata = buildLearnIndexMetadata("bn");
 
 export default function Page() {
-  return <LearnIndexPage locale="en" />;
+  return <LearnIndexPage locale="bn" />;
 }

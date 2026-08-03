@@ -8,6 +8,7 @@ import {
   getChaptersInPart,
   getChapterHref,
 } from "@/lib/content/queries";
+import { editionHref, localeFromPathname } from "@/lib/content/edition";
 import { cn } from "@/lib/utils";
 
 /**
@@ -19,21 +20,31 @@ import { cn } from "@/lib/utils";
  *
  * Order is always the curriculum order. It doesn't reorder to match whatever
  * path someone picked; a map that rearranges itself isn't a map.
+ *
+ * The edition is read off the pathname rather than passed in. This renders
+ * inside both route trees (`D-0015`), and taking it from the URL means it
+ * cannot disagree with the page the reader is actually on — which a prop
+ * threaded through two layouts eventually would.
  */
 export function CurriculumSidebar() {
   const pathname = usePathname();
+  const locale = localeFromPathname(pathname);
+  const prefix = locale === "bn" ? "/bn" : "";
+  const to = (path: string) => editionHref(path, locale);
 
   return (
     <nav aria-label="Curriculum" className="text-sm">
       <ul className="flex flex-col gap-6">
         {getAllParts().map((part) => {
           const chapters = getChaptersInPart(part.id);
-          const isCurrentPart = pathname.startsWith(`/learn/${part.slug}`);
+          const isCurrentPart = pathname.startsWith(
+            `${prefix}/learn/${part.slug}`,
+          );
 
           return (
             <li key={part.id}>
               <Link
-                href={`/learn/${part.slug}`}
+                href={to(`/learn/${part.slug}`)}
                 className={cn(
                   "mb-2 block font-semibold no-underline",
                   isCurrentPart ? "text-text-primary" : "text-text-secondary",
@@ -49,7 +60,7 @@ export function CurriculumSidebar() {
                 )}
               >
                 {chapters.map((chapter) => {
-                  const href = getChapterHref(chapter);
+                  const href = to(getChapterHref(chapter));
                   const isCurrent = pathname === href;
 
                   return (

@@ -7,25 +7,22 @@ import {
 import { getAllChapters, getPart } from "@/lib/content/queries";
 
 /**
- * The English chapter route.
+ * The Bangla chapter route.
  *
- * Everything is in `ChapterPage`. This file exists to name the locale and the
- * static params; its Bangla counterpart at `app/bn/learn/[part]/[chapter]`
- * differs by one word (`D-0015`).
+ * Identical to its English counterpart apart from the locale. That is the
+ * design (`D-0015`, `ADR-0011`): the page lives in one place, so the two
+ * editions have nothing to drift apart on.
+ *
+ * Every chapter prerenders here too, including ones with no Bangla text.
+ * `PRJ-004` §3.8 translates the foundational modules for v1.0, not the whole
+ * curriculum, so "available in English, not yet in Bangla" is the expected
+ * state for most of this tree and is stated on the page rather than 404'd.
  */
 
 interface Props {
   params: Promise<{ part: string; chapter: string }>;
 }
 
-/**
- * Every chapter gets a prerendered route, written or not.
- *
- * Deliberately not gated on whether the MDX exists. An unwritten chapter
- * renders as "not written yet" with its prerequisites and neighbours intact —
- * a 404 would claim the chapter doesn't exist, which is a different and wrong
- * statement, and it would mean the sidebar links into dead ends for months.
- */
 export function generateStaticParams() {
   return getAllChapters().map((chapter) => ({
     part: getPart(chapter.part)?.slug ?? "",
@@ -38,11 +35,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildChapterMetadata({
     partSlug: part,
     chapterSlug: chapter,
-    locale: "en",
+    locale: "bn",
   });
 }
 
 export default async function Page({ params }: Props) {
   const { part, chapter } = await params;
-  return <ChapterPage partSlug={part} chapterSlug={chapter} locale="en" />;
+  return <ChapterPage partSlug={part} chapterSlug={chapter} locale="bn" />;
 }

@@ -310,3 +310,90 @@ export function renew(loan: Loan, today: Date): Loan {
     },
   ]}
 />
+
+## Check your understanding
+
+{/* Exercises the Quiz component end to end: one of each of the three
+    answer shapes — pick one, pick several, and put in order. The subject is
+    library loans for the same reason the rest of this file is: it proves the
+    pipeline without pretending to be curriculum. */}
+
+<Quiz
+  chapterHref="/preview/chapter"
+  questions={[
+    {
+      id: "q1",
+      type: "single-choice",
+      node: "K-0001",
+      objective: "Say what a due date is derived from",
+      chapter: "C00",
+      level: "beginner",
+      prompt: "A loan's due date is calculated from which of these?",
+      options: [
+        { id: "a", text: "The borrower's category and the item type" },
+        {
+          id: "b",
+          text: "The date the item was acquired",
+          whyNot:
+            "Acquisition date affects nothing about circulation once an item is on the shelf.",
+        },
+        {
+          id: "c",
+          text: "The number of holds already placed",
+          whyNot:
+            "Holds shorten a renewal, but the original due date is set before any hold exists.",
+        },
+        { id: "d", text: "The branch the item is shelved at" },
+      ],
+      correct: "a",
+      explanation:
+        "Loan periods are a property of the borrower category crossed with the item type. Everything else adjusts a loan after it exists.",
+    },
+    {
+      id: "q2",
+      type: "multiple-choice",
+      node: "K-0002",
+      objective: "Identify what blocks a renewal",
+      chapter: "C00",
+      level: "beginner",
+      prompt: "Which of these prevent a loan from being renewed?",
+      options: [
+        { id: "a", text: "Another borrower has placed a hold on the item" },
+        { id: "b", text: "The renewal limit for the category is reached" },
+        {
+          id: "c",
+          text: "The item is shelved at a different branch",
+          whyNot:
+            "Where an item lives does not affect whether the current loan can continue.",
+        },
+        { id: "d", text: "The borrower's account is expired" },
+        {
+          id: "e",
+          text: "The item was published more than ten years ago",
+          whyNot: "Age of the work has no bearing on circulation rules.",
+        },
+      ],
+      correct: ["a", "b", "d"],
+      explanation:
+        "Renewal is blocked by competing demand, by a limit already reached, and by an account that is no longer valid.",
+    },
+    {
+      id: "q3",
+      type: "sequence",
+      node: "K-0003",
+      objective: "Order the stages of a loan",
+      chapter: "C00",
+      level: "beginner",
+      prompt: "Put the stages of a loan in order.",
+      steps: [
+        { id: "s1", text: "The item is checked out and a due date is set" },
+        { id: "s2", text: "A renewal extends the due date" },
+        { id: "s3", text: "The due date passes and the loan is overdue" },
+        { id: "s4", text: "The item is returned and the loan closes" },
+      ],
+      correctOrder: ["s1", "s2", "s3", "s4"],
+      explanation:
+        "A loan opens at checkout, may be extended, becomes overdue if the date passes, and closes on return.",
+    },
+  ]}
+/>
